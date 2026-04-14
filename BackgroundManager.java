@@ -11,23 +11,15 @@
 */
 
 import java.awt.Graphics2D;
+import java.io.File;
 import javax.swing.JFrame;
 
 
 public class BackgroundManager {
 
-	private String bgImages[] = {"images/layer_08.png",
-			       	     "images/layer_07.png",
-				     "images/layer_06.png",
-				     "images/layer_05.png",
-				     "images/layer_04.png",
-				     "images/layer_03.png",
-				     "images/layer_02.png",
-			       	     "images/layer_01.png"};
+	String pathName = "images/backgrounds";
 
-  	private int moveAmount[] = {1, 2, 3, 4, 4, 4, 5, 10};  
-						// pixel amounts to move each background left or right
-     						// a move amount of 0 makes a background stationary
+	private String bgImages[] = new String[50];
 
   	private Background[] backgrounds;
   	private int numBackgrounds;
@@ -38,11 +30,17 @@ public class BackgroundManager {
 						// ignore moveSize
     		this.window = window;
 
-    		numBackgrounds = bgImages.length;
+			File folder = new File(pathName);
+			File[] files = folder.listFiles();
+			for (int i=0; i < files.length; i++) {
+				bgImages[i] = pathName + "/" + files[files.length - 1 - i].getName();
+			}
+
+			numBackgrounds = files.length;
     		backgrounds = new Background[numBackgrounds];
 
     		for (int i = 0; i < numBackgrounds; i++) {
-       			backgrounds[i] = new Background(window, bgImages[i], moveAmount[i]);
+       			backgrounds[i] = new Background(window, bgImages[i], i/2);
     		}
   	} 
 

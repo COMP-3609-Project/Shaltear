@@ -2,6 +2,7 @@ import java.awt.*;			// need this for GUI objects
 import java.awt.event.*;			// need this for certain AWT classes
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import javax.swing.*;	// need this to implement page flipping
 
 
@@ -20,6 +21,10 @@ public class GameWindow extends JFrame implements
 
 	private BirdAnimation animation = null;		// animation sprite
 	private ImageEffect imageEffect;		// sprite demonstrating an image effect
+
+	private boolean levelChange;
+	private int level;
+	private boolean gameOver;
 
 	private BufferedImage image;			// drawing area for each frame
 
@@ -96,42 +101,34 @@ public class GameWindow extends JFrame implements
 		finishOff();
 	}
 
-
-	/* This method performs some tasks before closing the game.
-	   The call to System.exit() should not be necessary; however,
-	   it prevents hanging when the game terminates.
-	*/
-
-	private void finishOff() { 
-    		if (!finishedOff) {
-			finishedOff = true;
-			restoreScreen();
-			System.exit(0);
-		}
-	}
-
-
-	/* This method switches off full screen mode. The display
-	   mode is also reset if it has been changed.
-	*/
-
-	private void restoreScreen() { 
-		Window w = device.getFullScreenWindow();
-		
-		if (w != null)
-			w.dispose();
-		
-		device.setFullScreenWindow(null);
-	}
-
-
 	public void gameUpdate () {
 		tileMap.update();
 
 		if (!isPaused && isAnimShown && !isAnimPaused)
 			animation.update();
 		imageEffect.update();
+		
+		if (levelChange) {
+			levelChange = false;
+			tileManager = new TileMapManager (this);
 
+			try {
+				String filename = "maps/map" + level + ".txt";
+				tileMap = tileManager.loadMap(filename) ;
+				int w, h;
+				w = tileMap.getWidth();
+				h = tileMap.getHeight();
+				System.out.println ("Changing level to Level " + level);
+				System.out.println ("Width of tilemap " + w);
+				System.out.println ("Height of tilemap " + h);
+			}
+			catch (IOException e) {		// no more maps: terminate game
+				gameOver = true;
+				System.out.println(e);
+				System.out.println("Game Over"); 
+				return;
+			}
+		}
 	}
 
 
@@ -160,6 +157,89 @@ public class GameWindow extends JFrame implements
 		drawButtons(g2);
 		g2.dispose();
 	}
+
+	private void startGame() {
+		level = 1;
+		levelChange = false;
+
+		if (gameThread == null) {
+			//soundManager.playSound ("background", true);
+
+			tileManager = new TileMapManager (this);
+
+			try {
+				tileMap = tileManager.loadMap("maps/map1.txt");
+				int w, h;
+				w = tileMap.getWidth();
+				h = tileMap.getHeight();
+				System.out.println ("Width of tilemap " + w);
+				System.out.println ("Height of tilemap " + h);
+			}
+			catch (Exception e) {
+				System.out.println(e);
+				System.exit(0);
+			}
+
+			imageEffect = new ImageEffect (this);
+			gameThread = new Thread(this);
+			gameThread.start();			
+
+		}
+	}
+
+	public void endLevel() {
+		level = level + 1;
+		levelChange = true;
+	}
+
+
+
+	// displays a message to the screen when the user stops the game
+
+	private void gameOverMessage(Graphics g) {
+		
+		Font font = new Font("SansSerif", Font.BOLD, 24);
+		FontMetrics metrics = this.getFontMetrics(font);
+
+		String msg = "Game Over. Thanks for playing!";
+
+		int x = (pWidth - metrics.stringWidth(msg)) / 2; 
+		int y = (pHeight - metrics.getHeight()) / 2;
+
+		g.setColor(Color.BLUE);
+		g.setFont(font);
+		g.drawString(msg, x, y);
+
+	}
+
+
+	/* This method performs some tasks before closing the game.
+	   The call to System.exit() should not be necessary; however,
+	   it prevents hanging when the game terminates.
+	*/
+
+	private void finishOff() { 
+    		if (!finishedOff) {
+			finishedOff = true;
+			restoreScreen();
+			System.exit(0);
+		}
+	}
+
+
+	/* This method switches off full screen mode. The display
+	   mode is also reset if it has been changed.
+	*/
+
+	private void restoreScreen() { 
+		Window w = device.getFullScreenWindow();
+		
+		if (w != null)
+			w.dispose();
+		
+		device.setFullScreenWindow(null);
+	}
+
 
 
 	private void initFullScreen() {				// standard procedure to get into FSEM
@@ -346,52 +426,6 @@ public class GameWindow extends JFrame implements
 		g.drawString("Quit", quitButtonArea.x+60, quitButtonArea.y+25);
 */
 		g.setFont(oldFont);		// reset font
-
-	}
-
-
-	private void startGame() { 
-		if (gameThread == null) {
-			//soundManager.playSound ("background", true);
-
-			tileManager = new TileMapManager (this);
-
-			try {
-				tileMap = tileManager.loadMap("maps/map1.txt");
-				int w, h;
-				w = tileMap.getWidth();
-				h = tileMap.getHeight();
-				System.out.println ("Width of tilemap " + w);
-				System.out.println ("Height of tilemap " + h);
-			}
-			catch (Exception e) {
-				System.out.println(e);
-				System.exit(0);
-			}
-
-			imageEffect = new ImageEffect (this);
-			gameThread = new Thread(this);
-			gameThread.start();			
-
-		}
-	}
-
-
-	// displays a message to the screen when the user stops the game
-
-	private void gameOverMessage(Graphics g) {
-		
-		Font font = new Font("SansSerif", Font.BOLD, 24);
-		FontMetrics metrics = this.getFontMetrics(font);
-
-		String msg = "Game Over. Thanks for playing!";
-
-		int x = (pWidth - metrics.stringWidth(msg)) / 2; 
-		int y = (pHeight - metrics.getHeight()) / 2;
-
-		g.setColor(Color.BLUE);
-		g.setFont(font);
-		g.drawString(msg, x, y);
 
 	}
 

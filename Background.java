@@ -10,7 +10,6 @@ public class Background {
 
 	private Dimension dimension;
 
- 	private int bgX;
 	private int backgroundX;
 	private int backgroundX2;
 	private int bgDX;			// size of the background move (in pixels)
@@ -30,53 +29,45 @@ public class Background {
 
     		this.bgDX = bgDX;
 
+		backgroundX = 0;
+		backgroundX2 = bgImageWidth;
   	}
 
 
   	public void moveRight() {
 
-		if (bgX == 0) {
-			backgroundX = 0;
-			backgroundX2 = bgImageWidth;			
-		}
-
-		bgX = bgX - bgDX;
-
 		backgroundX = backgroundX - bgDX;
 		backgroundX2 = backgroundX2 - bgDX;
 
-		if ((bgX + bgImageWidth) % bgImageWidth == 0) {
-			System.out.println ("Background change: bgX = " + bgX); 
-			backgroundX = 0;
-			backgroundX2 = bgImageWidth;
+		if (backgroundX <= -bgImageWidth) {
+			backgroundX = backgroundX2 + bgImageWidth;
 		}
 
+		if (backgroundX2 <= -bgImageWidth) {
+			backgroundX2 = backgroundX + bgImageWidth;
+		}
   	}
 
 
   	public void moveLeft() {
 	
-		if (bgX == 0) {
-			backgroundX = bgImageWidth * -1;
-			backgroundX2 = 0;			
-		}
-
-		bgX = bgX + bgDX;
-				
 		backgroundX = backgroundX + bgDX;	
 		backgroundX2 = backgroundX2 + bgDX;
 
-		if ((bgX + bgImageWidth) % bgImageWidth == 0) {
-			//System.out.println ("Background change: bgX = " + bgX); 
-			backgroundX = bgImageWidth * -1;
-			backgroundX2 = 0;
-		}			
+		if (backgroundX >= bgImageWidth) {
+			backgroundX = backgroundX2 - bgImageWidth;
+		}
+
+		if (backgroundX2 >= bgImageWidth) {
+			backgroundX2 = backgroundX - bgImageWidth;
+		}
    	}
  
 
   	public void draw (Graphics2D g2) {
-		g2.drawImage(bgImage, backgroundX, 0, bgImageWidth, dimension.height, null);
-		g2.drawImage(bgImage, backgroundX2, 0, bgImageWidth, dimension.height, null);
+		// Draw the two main background copies
+		g2.drawImage(bgImage, backgroundX, 0, dimension.width, dimension.height, null);
+		g2.drawImage(bgImage, backgroundX2, 0, dimension.width, dimension.height, null);
   	}
 
 
