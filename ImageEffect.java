@@ -3,7 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 import java.awt.Image;
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -18,7 +18,7 @@ public class ImageEffect {
 	private static final int XSTEP = 7;		// amount of pixels to move in one keystroke
 	private static final int YPOS = 150;		// vertical position of the image
 
-	private JPanel panel;				// JPanel on which image will be drawn
+	private JFrame window;				// JFrame on which image will be drawn
 	private Dimension dimension;
 	private int x;
 	private int y;
@@ -26,18 +26,18 @@ public class ImageEffect {
 	private BufferedImage spriteImage;		// image for sprite effect
 	private BufferedImage copy;			// copy of image
 
-	//Graphics2D g2;
+	Graphics2D g2;
 
 	int time, timeChange;				// to control when the image is grayed
 	boolean originalImage, grayImage;
 
 
-	public ImageEffect (JPanel panel) {
-		this.panel = panel;
-		//Graphics g = window.getGraphics ();
-		//g2 = (Graphics2D) g;
+	public ImageEffect (JFrame window) {
+		this.window = window;
+		Graphics g = window.getGraphics ();
+		g2 = (Graphics2D) g;
 
-		dimension = panel.getSize();
+		dimension = window.getSize();
 		Random random = new Random();
 		x = random.nextInt (dimension.width - XSIZE);
 		y = YPOS;

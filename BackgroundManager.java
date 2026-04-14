@@ -11,7 +11,7 @@
 */
 
 import java.awt.Graphics2D;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 
 
 public class BackgroundManager {
@@ -32,17 +32,17 @@ public class BackgroundManager {
   	private Background[] backgrounds;
   	private int numBackgrounds;
 
-  	private JPanel panel;			// JPanel on which backgrounds are drawn
+  	private JFrame window;			// JFrame on which backgrounds are drawn
 
-  	public BackgroundManager(JPanel panel, int moveSize) {
+  	public BackgroundManager(JFrame window, int moveSize) {
 						// ignore moveSize
-    		this.panel = panel;
+    		this.window = window;
 
     		numBackgrounds = bgImages.length;
     		backgrounds = new Background[numBackgrounds];
 
     		for (int i = 0; i < numBackgrounds; i++) {
-       			backgrounds[i] = new Background(panel, bgImages[i], moveAmount[i]);
+       			backgrounds[i] = new Background(window, bgImages[i], moveAmount[i]);
     		}
   	} 
 

@@ -1,11 +1,10 @@
-import java.awt.Image;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.util.LinkedList;
+import java.awt.Image;
 import java.util.Iterator;
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
+import javax.swing.JFrame;
 
 /**
     The TileMap class contains the data for a tile-based
@@ -26,27 +25,23 @@ public class TileMap {
 
     private LinkedList sprites;
     private Player player;
-    private Heart heart;
 
     BackgroundManager bgManager;
 
-    private GamePanel panel;
+    private JFrame window;
     private Dimension dimension;
 
     /**
         Creates a new TileMap with the specified width and
         height (in number of tiles) of the map.
     */
-    public TileMap(GamePanel panel, int width, int height) {
+    public TileMap(JFrame window, int width, int height) {
 
-	this.panel = panel;
-	dimension = panel.getSize();
+	this.window = window;
+	dimension = window.getSize();
 
 	screenWidth = dimension.width;
 	screenHeight = dimension.height;
-
-	System.out.println ("Width: " + screenWidth);
-	System.out.println ("Height: " + screenHeight);
 
 	mapWidth = width;
 	mapHeight = height;
@@ -56,21 +51,19 @@ public class TileMap {
        	offsetY = screenHeight - tilesToPixels(mapHeight);
 	System.out.println("offsetY: " + offsetY);
 
-	bgManager = new BackgroundManager (panel, 12);
+	bgManager = new BackgroundManager (window, 12);
 
         tiles = new Image[mapWidth][mapHeight];
-	player = new Player (panel, this, bgManager);
-	heart = new Heart (panel, player);
-		
+	player = new Player (window, this, bgManager);
         sprites = new LinkedList();
 
 	Image playerImage = player.getImage();
 	int playerHeight = playerImage.getHeight(null);
 
 	int x, y;
-	x = (dimension.width / 2) + TILE_SIZE;		// position player in middle of screen
+	// x = (dimension.width / 2) + TILE_SIZE;	// position player in middle of screen
 
-	//x = 1000;					// position player in 'random' location
+	x = 192;					// position player in 'random' location
 	y = dimension.height - (TILE_SIZE + playerHeight);
 
         player.setX(x);
@@ -184,24 +177,14 @@ public class TileMap {
         offsetX = Math.min(offsetX, 0);
         offsetX = Math.max(offsetX, screenWidth - mapWidthPixels);
 
-/*
-        // draw black background, if needed
-        if (background == null ||
-            screenHeight > background.getHeight(null))
-        {
-            g.setColor(Color.black);
-            g.fillRect(0, 0, screenWidth, screenHeight);
-        }
-*/
+        g2.setColor(Color.black);
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+        
+
 	// draw the background first
 
 	bgManager.draw (g2);
 
-	//Draw white background (for screen capture)
-/*
-	g2.setColor (Color.WHITE);
-	g2.fill (new Rectangle2D.Double (0, 0, 600, 500));
-*/
         // draw the visible tiles
 
         int firstTileX = pixelsToTiles(-offsetX);
@@ -223,14 +206,7 @@ public class TileMap {
 
         g2.drawImage(player.getImage(),
             Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()), //+ offsetY,
-            null);
-
-	// draw Heart sprite
-
-        g2.drawImage(heart.getImage(),
-            Math.round(heart.getX()) + offsetX,
-            Math.round(heart.getY()), 40, 40, //+ offsetY, 50, 50,
+            Math.round(player.getY()),
             null);
 
 /*
@@ -295,18 +271,6 @@ public class TileMap {
 
     public void update() {
 	player.update();
-
-	if (heart.collidesWithPlayer()) {
-		panel.endLevel();
-		return;
-	}
-
-	heart.update();
-
-	if (heart.collidesWithPlayer()) {
-		panel.endLevel();
-	}
-
     }
 
 }

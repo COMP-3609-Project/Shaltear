@@ -15,11 +15,10 @@ public class SoundManager {				// a Singleton class
 	private static SoundManager instance = null;	// keeps track of Singleton instance
 
 	private SoundManager () {
-		Clip clip;
 		clips = new HashMap<String, Clip>();
-		
-		//Clip clip = loadClip("sounds/background.wav");
-		//clips.put("background", clip);		// background theme sound
+
+		Clip clip = loadClip("sounds/background.wav");
+		clips.put("background", clip);		// background theme sound
 
 		clip = loadClip("sounds/hitSound.wav");
 		clips.put("hit", clip);			// played when player's sprite collides 

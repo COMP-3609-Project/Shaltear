@@ -1,8 +1,8 @@
-import java.awt.Graphics2D;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import javax.swing.JPanel;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
 public class Background {
   	private Image bgImage;
@@ -16,14 +16,14 @@ public class Background {
 	private int bgDX;			// size of the background move (in pixels)
 
 
-	public Background(JPanel panel, String imageFile, int bgDX) {
+	public Background(JFrame window, String imageFile, int bgDX) {
 
     		this.bgImage = loadImage(imageFile);
     		bgImageWidth = bgImage.getWidth(null);	// get width of the background
 
 		System.out.println ("bgImageWidth = " + bgImageWidth);
 
-		dimension = panel.getSize();
+		dimension = window.getSize();
 
 		if (bgImageWidth < dimension.width)
       			System.out.println("Background width < panel width");
@@ -75,8 +75,8 @@ public class Background {
  
 
   	public void draw (Graphics2D g2) {
-		g2.drawImage(bgImage, backgroundX, 0, null);
-		g2.drawImage(bgImage, backgroundX2, 0, null);
+		g2.drawImage(bgImage, backgroundX, 0, bgImageWidth, dimension.height, null);
+		g2.drawImage(bgImage, backgroundX2, 0, bgImageWidth, dimension.height, null);
   	}
 
 

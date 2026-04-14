@@ -2,12 +2,12 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.util.ArrayList;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 
 
 /**
-    The TileMapeManager class loads and manages tile Images and
+    The ResourceManager class loads and manages tile Images and
     "host" Sprites used in the game. Game Sprites are cloned from
     "host" Sprites.
 */
@@ -16,9 +16,10 @@ public class TileMapManager {
     private ArrayList<Image> tiles;
     private int currentMap = 0;
 
-    private GamePanel panel;
+    private JFrame window;
 
 /*
+    private GraphicsConfiguration gc;
 
     // host sprites used for cloning
     private Sprite playerSprite;
@@ -29,8 +30,8 @@ public class TileMapManager {
     private Sprite flySprite;
 */
 
-    public TileMapManager(GamePanel panel) {
-	this.panel = panel;
+    public TileMapManager(JFrame window) {
+	this.window = window;
 
         loadTileImages();
 
@@ -68,7 +69,7 @@ public class TileMapManager {
         // parse the lines to create a TileMap
         mapHeight = lines.size();
 
-        TileMap newMap = new TileMap(panel, mapWidth, mapHeight);
+        TileMap newMap = new TileMap(window, mapWidth, mapHeight);
         for (int y=0; y<mapHeight; y++) {
             String line = lines.get(y);
             for (int x=0; x<line.length(); x++) {

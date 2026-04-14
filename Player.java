@@ -3,7 +3,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.awt.Point;
@@ -15,7 +15,7 @@ public class Player {
 
    private static final int TILE_SIZE = 64;
 
-   private JPanel panel;		// reference to the JFrame on which player is drawn
+   private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
 
@@ -38,8 +38,8 @@ public class Player {
    private int initialVelocity;
    private int startAir;
 
-   public Player (JPanel panel, TileMap t, BackgroundManager b) {
-      this.panel = panel;
+   public Player (JFrame window, TileMap t, BackgroundManager b) {
+      this.window = window;
 
       tileMap = t;			// tile map on which the player's sprite is displayed
       bgManager = b;			// instance of BackgroundManager
@@ -166,7 +166,7 @@ public class Player {
       int newX = x;
       Point tilePos = null;
 
-      if (!panel.isVisible ()) return;
+      if (!window.isVisible ()) return;
       
       if (direction == 1) {		// move left
 	  playerImage = playerLeftImage;
@@ -269,7 +269,7 @@ public class Player {
 
    public void jump () {  
 
-      if (!panel.isVisible ()) return;
+      if (!window.isVisible ()) return;
 
       jumping = true;
       timeElapsed = 0;
@@ -313,19 +313,6 @@ public class Player {
 	   	else {
 			y = newY;
 			System.out.println ("Jumping: No collision.");
-
-			// the following if-statement is to pause the jump to capture the screen
-
-/*
-			if (x > 1608 && y < 300) {
-				try {
-					Thread.sleep (1000);
-				}
-				catch (Exception e) {
-					System.out.println ("ERROR! " + e);
-				}
-			}
-*/
 	   	}
             }
 	    else
@@ -354,7 +341,7 @@ public class Player {
 
    public void moveUp () {
 
-      if (!panel.isVisible ()) return;
+      if (!window.isVisible ()) return;
 
       y = y - DY;
    }
@@ -382,14 +369,6 @@ public class Player {
 
    public Image getImage() {
       return playerImage;
-   }
-
-
-   public Rectangle2D.Double getBoundingRectangle() {
-      int playerWidth = playerImage.getWidth(null);
-      int playerHeight = playerImage.getHeight(null);
-
-      return new Rectangle2D.Double (x, y, playerWidth, playerHeight);
    }
 
 }
