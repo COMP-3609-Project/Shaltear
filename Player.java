@@ -1,12 +1,8 @@
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import java.awt.Point;
+import javax.swing.JFrame;
 
 public class Player {			
 
@@ -33,6 +29,8 @@ public class Player {
 
    private boolean goingUp;
    private boolean goingDown;
+
+   private boolean leftKey, rightKey, jumpKey;
 
    private boolean inAir;
    private int initialVelocity;
@@ -129,7 +127,50 @@ public class Player {
 
 	  return null;
    }
- 
+ public void handleMovement() {
+    // 1. Handle Jumping (Upward trigger)
+    if (jumpKey && !jumping && !inAir) {
+        jump();
+    }
+
+    // 2. Handle Left Movement
+    if (leftKey) {
+        playerImage = playerLeftImage;
+        int newX = x - DX;
+        if (newX >= 0) {
+            Point tilePos = collidesWithTile(newX, y);
+            if (tilePos == null) {
+                x = newX;
+                bgManager.moveLeft();
+            } else {
+                x = ((int) tilePos.getX() + 1) * TILE_SIZE; // Flush with tile
+            }
+        }
+    }
+
+    // 3. Handle Right Movement
+    if (rightKey) {
+        playerImage = playerRightImage;
+        int playerWidth = playerImage.getWidth(null);
+        int newX = x + DX;
+        int tileMapWidth = tileMap.getWidthPixels();
+
+        if (newX + playerWidth < tileMapWidth) {
+            Point tilePos = collidesWithTile(newX + playerWidth, y);
+            if (tilePos == null) {
+                x = newX;
+                bgManager.moveRight();
+            } else {
+                x = ((int) tilePos.getX()) * TILE_SIZE - playerWidth; // Flush with tile
+            }
+        }
+    }
+    
+    // 4. Handle falling if we walked off a ledge while moving
+    if ((leftKey || rightKey) && isInAir()) {
+        fall();
+    }
+}
 /*
 
    public Point collidesWithTile(int newX, int newY) {
@@ -161,7 +202,7 @@ public class Player {
 */
 
 
-   public synchronized void move (int direction) {
+   /*public synchronized void move (int direction) {
 
       int newX = x;
       Point tilePos = null;
@@ -232,6 +273,7 @@ public class Player {
           }
       }
    }
+	  */
 
 
    public boolean isInAir() {
@@ -338,6 +380,11 @@ public class Player {
       }
    }
 
+   public void setKey(int direction, boolean isPressed) {
+    if (direction == 1) leftKey = isPressed;
+    if (direction == 2) rightKey = isPressed;
+    if (direction == 3) jumpKey = isPressed;
+	}
 
    public void moveUp () {
 

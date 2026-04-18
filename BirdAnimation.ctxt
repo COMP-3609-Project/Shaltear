@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=BirdAnimation
+comment0.text=\r\n\ \ \ \ The\ BirdAnimation\ class\ creates\ an\ animation\ of\ a\ flying\ bird.\ \r\n
+comment1.params=
+comment1.target=BirdAnimation()
+comment2.params=
+comment2.target=void\ start()
+comment3.params=
+comment3.target=void\ update()
+comment4.params=g2
+comment4.target=void\ draw(java.awt.Graphics2D)
+comment5.params=
+comment5.target=void\ playSound()
+comment6.params=
+comment6.target=void\ stopSound()
+numComments=7
