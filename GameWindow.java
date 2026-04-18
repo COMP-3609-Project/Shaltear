@@ -17,7 +17,6 @@ public class GameWindow extends JFrame implements
     private Thread gameThread = null;                
     private volatile boolean isRunning = false;        
 
-    private BirdAnimation animation = null;        
     private ImageEffect imageEffect;        
     private Player player; 
 
@@ -40,14 +39,6 @@ public class GameWindow extends JFrame implements
     private volatile boolean isOverStopButton = false;
     private Rectangle stopButtonArea;        
     private volatile boolean isStopped = false;
-
-    private volatile boolean isOverShowAnimButton = false;
-    private Rectangle showAnimButtonArea;        
-    private volatile boolean isAnimShown = false;
-
-    private volatile boolean isOverPauseAnimButton = false;
-    private Rectangle pauseAnimButtonArea;        
-    private volatile boolean isAnimPaused = false;
    
     private GraphicsDevice device;             
     private Graphics gScr;
@@ -56,6 +47,7 @@ public class GameWindow extends JFrame implements
     private SoundManager soundManager;
     TileMapManager tileManager;
     TileMap    tileMap;
+	private AnimationManager animManager;
 
     public GameWindow() {
         super("Tiled Bat and Ball Game: Full Screen Exclusive Mode");
@@ -71,13 +63,14 @@ public class GameWindow extends JFrame implements
         addMouseListener(this);
         addMouseMotionListener(this);
 
-        animation = new BirdAnimation();
+        animManager = new AnimationManager(this);
         soundManager = SoundManager.getInstance();
         image = new BufferedImage (pWidth, pHeight, BufferedImage.TYPE_INT_RGB);
 
         startGame();
     }
 
+    @Override
     public void run () {
         try {
             isRunning = true;
@@ -86,7 +79,7 @@ public class GameWindow extends JFrame implements
                     gameUpdate();
                 }
                 screenUpdate();
-                Thread.sleep (15);
+                Thread.sleep (50);
             }
         }
         catch(InterruptedException e) {}
@@ -104,8 +97,8 @@ public class GameWindow extends JFrame implements
             player.update();         
         }
 
-        if (!isPaused && isAnimShown && !isAnimPaused)
-            animation.update();
+        if (!isPaused)
+            animManager.updateAnimations();
         
         imageEffect.update();
         
@@ -118,13 +111,12 @@ public class GameWindow extends JFrame implements
                 tileMap = tileManager.loadMap(filename) ;
                 
                 // Re-initialize player for new level if needed
-                player = new Player(this, tileMap, new BackgroundManager(this, 8));
+                player = new Player(this, tileMap, new BackgroundManager(this, 8), this.animManager);
                 player.setX(64); 
                 player.setY(64);
                 
             } catch (IOException e) {
                 gameOver = true;
-                return;
             }
         }
     }
@@ -148,9 +140,6 @@ public class GameWindow extends JFrame implements
             tileMap.draw(g2);
         }
 
-        if (isAnimShown)
-            animation.draw(g2);
-
         imageEffect.draw(g2);
         drawButtons(g2);
     }
@@ -165,12 +154,12 @@ public class GameWindow extends JFrame implements
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
                 
-                player = new Player(this, tileMap, tileMap.bgManager);
+                player = new Player(this, tileMap, tileMap.bgManager, animManager);
                 player.setX(192);
                 player.setY(500);
 
                 tileMap.setPlayer(player);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println(e);
                 System.exit(0);
             }
@@ -183,6 +172,7 @@ public class GameWindow extends JFrame implements
 
     // --- INPUT HANDLING ---
 
+    @Override
     public void keyPressed (KeyEvent e) {
         if (isPaused || player == null) return;
 
@@ -205,6 +195,7 @@ public class GameWindow extends JFrame implements
         }
     }
 
+    @Override
     public void keyReleased (KeyEvent e) {
         if (player == null) return;
         
@@ -222,6 +213,7 @@ public class GameWindow extends JFrame implements
         }
     }
 
+    @Override
     public void keyTyped (KeyEvent e) {}
 
    
@@ -230,10 +222,6 @@ public class GameWindow extends JFrame implements
         pauseButtonArea = new Rectangle(leftOffset, 60, 150, 40);
         leftOffset += 170;
         stopButtonArea = new Rectangle(leftOffset, 60, 150, 40);
-        leftOffset += 170;
-        showAnimButtonArea = new Rectangle(leftOffset, 60, 150, 40);
-        leftOffset += 170;
-        pauseAnimButtonArea = new Rectangle(leftOffset, 60, 150, 40);
         leftOffset += 170;
         quitButtonArea = new Rectangle(leftOffset, 55, 180, 50);
     }
@@ -268,18 +256,23 @@ public class GameWindow extends JFrame implements
         if (isRunning) {
             isOverPauseButton = pauseButtonArea.contains(x,y);
             isOverStopButton = stopButtonArea.contains(x,y);
-            isOverShowAnimButton = showAnimButtonArea.contains(x,y);
-            isOverPauseAnimButton = pauseAnimButtonArea.contains(x,y);
             isOverQuitButton = quitButtonArea.contains(x,y);
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) { testMousePress(e.getX(), e.getY()); }
+    @Override
     public void mouseMoved(MouseEvent e) { testMouseMove(e.getX(), e.getY()); }
+    @Override
     public void mouseClicked(MouseEvent e) {}
+    @Override
     public void mouseEntered(MouseEvent e) {}
+    @Override
     public void mouseExited(MouseEvent e) {}
+    @Override
     public void mouseReleased(MouseEvent e) {}
+    @Override
     public void mouseDragged(MouseEvent e) {}
 
     private void finishOff() { 

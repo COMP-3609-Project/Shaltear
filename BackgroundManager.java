@@ -12,6 +12,7 @@
 
 import java.awt.Graphics2D;
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 
 
@@ -21,8 +22,7 @@ public class BackgroundManager {
 
 	private String bgImages[] = new String[50];
 
-  	private Background[] backgrounds;
-  	private int numBackgrounds;
+  	private ArrayList<Background> backgrounds;
 
   	private JFrame window;			// JFrame on which backgrounds are drawn
 
@@ -32,28 +32,23 @@ public class BackgroundManager {
 
 			File folder = new File(pathName);
 			File[] files = folder.listFiles();
+			backgrounds = new ArrayList<>();
+
 			for (int i=0; i < files.length; i++) {
-				bgImages[i] = pathName + "/" + files[files.length - 1 - i].getName();
+				backgrounds.add(new Background(window, pathName + "/" + files[files.length - 1 - i].getName(), i));
 			}
-
-			numBackgrounds = files.length;
-    		backgrounds = new Background[numBackgrounds];
-
-    		for (int i = 0; i < numBackgrounds; i++) {
-       			backgrounds[i] = new Background(window, bgImages[i], i);
-    		}
   	} 
 
 
   	public void moveRight() { 
-		for (int i=0; i < numBackgrounds; i++)
-      			backgrounds[i].moveRight();
+		for (Background background : backgrounds)
+      			background.moveRight();
   	}
 
 
   	public void moveLeft() {
-		for (int i=0; i < numBackgrounds; i++)
-      			backgrounds[i].moveLeft();
+		for (Background background : backgrounds)
+      			background.moveLeft();
   	}
 
 
@@ -61,8 +56,8 @@ public class BackgroundManager {
   	// backgrounds are drawn from the back to the front.
 
   	public void draw (Graphics2D g2) { 
-		for (int i=0; i < numBackgrounds; i++)
-      			backgrounds[i].draw(g2);
+		for (Background background : backgrounds)
+      			background.draw(g2);
   	}
 
 }

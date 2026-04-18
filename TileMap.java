@@ -83,11 +83,13 @@ public class TileMap {
             }
         }
 
-        
-        g2.drawImage(player.getImage(),
+        /*
+        g2.drawImage(player.getAnimation(),
             Math.round(player.getX()) + offsetX,
             Math.round(player.getY()),
             null);
+        */
+       player.getAnimation().draw(g2, Math.round(player.getX()) + offsetX, Math.round(player.getY()));
     }
 
     

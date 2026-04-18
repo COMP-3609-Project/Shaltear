@@ -1,6 +1,5 @@
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import javax.swing.JFrame;
 
@@ -14,6 +13,7 @@ public class Player {
    private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
+   private AnimationManager animManager;
 
    private int x;			// x-position of player's sprite
    private int y;			// y-position of player's sprite
@@ -21,7 +21,7 @@ public class Player {
    Graphics2D g2;
    private Dimension dimension;
 
-   private Image playerImage, playerLeftImage, playerRightImage;
+   private PlayerAnimation playerIdle, playerLeft, playerRight;
 
    private boolean jumping;
    private int timeElapsed;
@@ -36,25 +36,25 @@ public class Player {
    private int initialVelocity;
    private int startAir;
 
-   public Player (JFrame window, TileMap t, BackgroundManager b) {
+   private PlayerAnimation animation;
+
+   public Player (JFrame window, TileMap t, BackgroundManager b, AnimationManager a) {
       this.window = window;
 
       tileMap = t;			// tile map on which the player's sprite is displayed
       bgManager = b;			// instance of BackgroundManager
+      animManager = a;
 
       goingUp = goingDown = false;
       inAir = false;
 
-      playerLeftImage = ImageManager.loadImage("images/playerLeft.gif");
-      playerRightImage = ImageManager.loadImage("images/playerRight.gif");
-      playerImage = playerRightImage;
-
+      playerIdle = animManager.loadAnimation("PlayerIdle.png");
    }
 
 
    public Point collidesWithTile(int newX, int newY) {
 
-      	  int playerWidth = playerImage.getWidth(null);
+      	  int playerWidth = playerIdle.getWidth();
       	  int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTile = tileMap.pixelsToTiles(newY - offsetY);
@@ -71,9 +71,9 @@ public class Player {
 
    public Point collidesWithTileDown (int newX, int newY) {
 
-	  int playerWidth = playerImage.getWidth(null);
-      	  int playerHeight = playerImage.getHeight(null);
-      	  int offsetY = tileMap.getOffsetY();
+	  int playerWidth = playerIdle.getWidth();
+     int playerHeight = playerIdle.getHeight();
+     int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTileFrom = tileMap.pixelsToTiles(y - offsetY);
 	  int yTileTo = tileMap.pixelsToTiles(newY - offsetY + playerHeight);
@@ -100,7 +100,7 @@ public class Player {
 
    public Point collidesWithTileUp (int newX, int newY) {
 
-	  int playerWidth = playerImage.getWidth(null);
+	  int playerWidth = playerIdle.getWidth();
 
       	  int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
@@ -135,7 +135,6 @@ public class Player {
 
     // 2. Handle Left Movement
     if (leftKey) {
-        playerImage = playerLeftImage;
         int newX = x - DX;
         if (newX >= 0) {
             Point tilePos = collidesWithTile(newX, y);
@@ -150,8 +149,7 @@ public class Player {
 
     // 3. Handle Right Movement
     if (rightKey) {
-        playerImage = playerRightImage;
-        int playerWidth = playerImage.getWidth(null);
+        int playerWidth = playerIdle.getWidth();
         int newX = x + DX;
         int tileMapWidth = tileMap.getWidthPixels();
 
@@ -282,7 +280,7 @@ public class Player {
       Point tilePos;
 
       if (!jumping && !inAir) {   
-	  playerHeight = playerImage.getHeight(null);
+	  playerHeight = playerIdle.getHeight();
 	  tilePos = collidesWithTile(x, y + playerHeight + 1); 	// check below player to see if there is a tile
 	
   	  if (tilePos == null)				   	// there is no tile below player, so player is in the air
@@ -362,7 +360,7 @@ public class Player {
 		Point tilePos = collidesWithTileDown (x, newY);	
 	   	if (tilePos != null) {				// hits a tile going up
 		    System.out.println ("Jumping: Collision Going Down!");
-	  	    int playerHeight = playerImage.getHeight(null);
+	  	    int playerHeight = playerIdle.getHeight();
 		    goingDown = false;
 
       	            int offsetY = tileMap.getOffsetY();
@@ -414,8 +412,8 @@ public class Player {
    }
 
 
-   public Image getImage() {
-      return playerImage;
+   public PlayerAnimation getAnimation() {
+      return playerIdle;
    }
 
 }
