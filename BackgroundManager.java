@@ -40,7 +40,7 @@ public class BackgroundManager {
     		backgrounds = new Background[numBackgrounds];
 
     		for (int i = 0; i < numBackgrounds; i++) {
-       			backgrounds[i] = new Background(window, bgImages[i], i/2);
+       			backgrounds[i] = new Background(window, bgImages[i], i);
     		}
   	} 
 

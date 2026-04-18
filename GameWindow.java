@@ -93,7 +93,7 @@ public class GameWindow extends JFrame implements
 					gameUpdate();
 				}
 				screenUpdate();
-				Thread.sleep (15);
+				Thread.sleep (50);
 			}
 		}
 		catch(InterruptedException e) {}

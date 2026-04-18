@@ -66,8 +66,8 @@ public class Background {
 
   	public void draw (Graphics2D g2) {
 		// Draw the two main background copies
-		g2.drawImage(bgImage, backgroundX, 0, dimension.width, dimension.height, null);
-		g2.drawImage(bgImage, backgroundX2, 0, dimension.width, dimension.height, null);
+		g2.drawImage(bgImage, backgroundX, 0, bgImageWidth, dimension.height, null);
+		g2.drawImage(bgImage, backgroundX2, 0, bgImageWidth, dimension.height, null);
   	}
 
 
