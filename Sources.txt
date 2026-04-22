@@ -1,1 +1,4 @@
-Background - https://edermunizz.itch.io/free-pixel-art-forest
+Background1 - https://edermunizz.itch.io/free-pixel-art-forest
+Background2 - https://ansimuz.itch.io/gothicvania-cold-corridors
+TileMap1 - https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
+TileMap2 - https://ansimuz.itch.io/gothicvania-cold-corridors

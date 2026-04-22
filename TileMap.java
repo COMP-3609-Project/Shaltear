@@ -65,7 +65,7 @@ public class TileMap {
         g2.fillRect(0, 0, screenWidth, screenHeight);
         
         
-        bgManager.draw(g2);
+        bgManager.draw(g2, 1);
 
         
         int firstTileX = pixelsToTiles(-offsetX);
@@ -78,6 +78,8 @@ public class TileMap {
                     g2.drawImage(image,
                         tilesToPixels(x) + offsetX,
                         tilesToPixels(y) + offsetY,
+                        64,
+                        64,
                         null);
                 }
             }

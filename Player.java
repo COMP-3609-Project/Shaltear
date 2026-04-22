@@ -21,7 +21,7 @@ public class Player {
    Graphics2D g2;
    private Dimension dimension;
 
-   private PlayerAnimation playerIdle, playerLeft, playerRight;
+   private PlayerAnimation animation, playerIdle, playerLeft, playerRight, playerJump;
 
    private boolean jumping;
    private int timeElapsed;
@@ -36,7 +36,6 @@ public class Player {
    private int initialVelocity;
    private int startAir;
 
-   private PlayerAnimation animation;
 
    public Player (JFrame window, TileMap t, BackgroundManager b, AnimationManager a) {
       this.window = window;
@@ -49,6 +48,10 @@ public class Player {
       inAir = false;
 
       playerIdle = animManager.loadAnimation("PlayerIdle.png");
+      playerLeft = animManager.loadAnimation("PlayerRunLeft.png");
+      playerRight = animManager.loadAnimation("PlayerRunRight.png");
+      playerJump = animManager.loadAnimation("PlayerJump.png");
+      animation = playerIdle;
    }
 
 
@@ -128,13 +131,20 @@ public class Player {
 	  return null;
    }
  public void handleMovement() {
+   if(!jumping && !inAir && !leftKey && !rightKey){
+    animation = playerIdle;
+   }
     // 1. Handle Jumping (Upward trigger)
     if (jumpKey && !jumping && !inAir) {
+        animation = playerJump;
         jump();
     }
 
     // 2. Handle Left Movement
     if (leftKey) {
+      if(!jumping && !inAir){
+        animation = playerLeft;
+      }
         int newX = x - DX;
         if (newX >= 0) {
             Point tilePos = collidesWithTile(newX, y);
@@ -149,6 +159,10 @@ public class Player {
 
     // 3. Handle Right Movement
     if (rightKey) {
+      if(!jumping && !inAir){
+        animation = playerRight;
+      }
+
         int playerWidth = playerIdle.getWidth();
         int newX = x + DX;
         int tileMapWidth = tileMap.getWidthPixels();
@@ -166,6 +180,7 @@ public class Player {
     
     // 4. Handle falling if we walked off a ledge while moving
     if ((leftKey || rightKey) && isInAir()) {
+        animation = playerJump;
         fall();
     }
 }
@@ -413,7 +428,7 @@ public class Player {
 
 
    public PlayerAnimation getAnimation() {
-      return playerIdle;
+      return animation;
    }
 
 }

@@ -79,7 +79,7 @@ public class GameWindow extends JFrame implements
                     gameUpdate();
                 }
                 screenUpdate();
-                Thread.sleep (50);
+                Thread.sleep (30);
             }
         }
         catch(InterruptedException e) {}
@@ -166,7 +166,8 @@ public class GameWindow extends JFrame implements
 
             imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);
-            gameThread.start();            
+            gameThread.start();
+            animManager.startAnimations();
         }
     }
 

@@ -24,6 +24,12 @@ public class AnimationManager {
 			}
   	}
 
+    public void startAnimations(){
+        for(PlayerAnimation animation : animations){
+            animation.start();
+        }
+    }
+
     public void updateAnimations(){
         for(PlayerAnimation animation : animations){
             animation.update();

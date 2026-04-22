@@ -28,8 +28,8 @@ public class PlayerAnimation {
 		dx = 0;		// increment to move along x-axis
 		dy = 0;	// increment to move along y-axis
 
-		width = 50;
-		height = 80;
+		width = 100;
+		height = 100;
 
 		// load images from strip file
 
