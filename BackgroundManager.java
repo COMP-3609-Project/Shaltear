@@ -13,6 +13,8 @@
 import java.awt.Graphics2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import javax.swing.JFrame;
 
 
@@ -34,10 +36,11 @@ public class BackgroundManager {
 		for(int i=1;i<=2;i++){
 			File folder = new File(pathName + i);
 			File[] files = folder.listFiles();
+			Arrays.sort(files, Collections.reverseOrder());
 			ArrayList<Background> bg = new ArrayList<>();
 
 			for (int j=0; j < files.length; j++) {
-				bg.add(new Background(window, pathName + i + "/" + files[files.length - 1 - j].getName(), j));
+				bg.add(new Background(window, pathName + i + "/" + files[j].getName(), j));
 			}
 			backgrounds.add(bg);
 		}

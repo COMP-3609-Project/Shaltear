@@ -9,7 +9,7 @@ public class AnimationManager {
 
 	private String animNames[] = new String[50];
 
-    ArrayList<PlayerAnimation> animations;
+    ArrayList<GameAnimation> animations;
 
   	private JFrame window;			// JFrame on which backgrounds are drawn
 
@@ -20,24 +20,24 @@ public class AnimationManager {
 			File[] files = folder.listFiles();
             animations = new ArrayList<>();
 			for (File file : files) {
-                animations.add(new PlayerAnimation(file.getName()));
+                animations.add(new GameAnimation(file.getName()));
 			}
   	}
 
     public void startAnimations(){
-        for(PlayerAnimation animation : animations){
+        for(GameAnimation animation : animations){
             animation.start();
         }
     }
 
     public void updateAnimations(){
-        for(PlayerAnimation animation : animations){
+        for(GameAnimation animation : animations){
             animation.update();
         }
     }
 
-    public PlayerAnimation loadAnimation(String animName){
-        for(PlayerAnimation animation : animations){
+    public GameAnimation loadAnimation(String animName){
+        for(GameAnimation animation : animations){
             if(animation.getName().equals(animName)){
                 return animation;
             }

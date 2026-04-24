@@ -1,10 +1,10 @@
-import javax.swing.ImageIcon;
-import java.awt.Image;
 import java.awt.Graphics2D;
-import javax.imageio.ImageIO;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
    The ImageManager class manages the loading and processing of images.
@@ -55,6 +55,24 @@ public class ImageManager {
 
     		return copy; 
 	  }
+
+	public static BufferedImage hFlipImage(BufferedImage src) {
+
+		int imWidth = src.getWidth();
+		int imHeight = src.getHeight();
+
+		BufferedImage dest = new BufferedImage (imWidth, imHeight,
+							BufferedImage.TYPE_INT_ARGB);
+
+    		Graphics2D g2d = dest.createGraphics();
+
+		// Perform horizontal flip
+
+		g2d.drawImage(src, imWidth, 0, 0,imHeight,
+			 	   0, 0, imWidth, imHeight, null);
+
+		return dest;
+	}
 
 }
 

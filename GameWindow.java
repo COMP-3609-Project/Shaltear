@@ -100,6 +100,8 @@ public class GameWindow extends JFrame implements
         if (!isPaused)
             animManager.updateAnimations();
         
+        
+        
         imageEffect.update();
         
         if (levelChange) {

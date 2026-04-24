@@ -1,11 +1,12 @@
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
 
 public class Player {			
 
-   private static final int DX = 8;	// amount of X pixels to move in one keystroke
+   private static final int DX = 15;	// amount of X pixels to move in one keystroke
    private static final int DY = 32;	// amount of Y pixels to move in one keystroke
 
    private static final int TILE_SIZE = 64;
@@ -21,7 +22,7 @@ public class Player {
    Graphics2D g2;
    private Dimension dimension;
 
-   private PlayerAnimation animation, playerIdle, playerLeft, playerRight, playerJump;
+   private GameAnimation animation, playerIdle, playerLeft, playerRight, playerJump;
 
    private boolean jumping;
    private int timeElapsed;
@@ -47,17 +48,17 @@ public class Player {
       goingUp = goingDown = false;
       inAir = false;
 
-      playerIdle = animManager.loadAnimation("PlayerIdle.png");
-      playerLeft = animManager.loadAnimation("PlayerRunLeft.png");
-      playerRight = animManager.loadAnimation("PlayerRunRight.png");
-      playerJump = animManager.loadAnimation("PlayerJump.png");
+      playerIdle = animManager.loadAnimation("SkeletonIdle.png");
+      playerLeft = animManager.loadAnimation("PlayerLeft.png");
+      playerRight = animManager.loadAnimation("PlayerRight.png");
+      // playerJump = animManager.loadAnimation("PlayerJump.png");
       animation = playerIdle;
    }
 
 
    public Point collidesWithTile(int newX, int newY) {
 
-      	  int playerWidth = playerIdle.getWidth();
+      	  int playerWidth = animation.getWidth();
       	  int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTile = tileMap.pixelsToTiles(newY - offsetY);
@@ -74,8 +75,8 @@ public class Player {
 
    public Point collidesWithTileDown (int newX, int newY) {
 
-	  int playerWidth = playerIdle.getWidth();
-     int playerHeight = playerIdle.getHeight();
+	  int playerWidth = animation.getWidth();
+     int playerHeight = animation.getHeight();
      int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTileFrom = tileMap.pixelsToTiles(y - offsetY);
@@ -103,7 +104,7 @@ public class Player {
 
    public Point collidesWithTileUp (int newX, int newY) {
 
-	  int playerWidth = playerIdle.getWidth();
+	  int playerWidth = animation.getWidth();
 
       	  int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
@@ -130,13 +131,14 @@ public class Player {
 
 	  return null;
    }
+
  public void handleMovement() {
    if(!jumping && !inAir && !leftKey && !rightKey){
     animation = playerIdle;
    }
     // 1. Handle Jumping (Upward trigger)
     if (jumpKey && !jumping && !inAir) {
-        animation = playerJump;
+        // animation = playerJump;
         jump();
     }
 
@@ -163,7 +165,7 @@ public class Player {
         animation = playerRight;
       }
 
-        int playerWidth = playerIdle.getWidth();
+        int playerWidth = animation.getWidth();
         int newX = x + DX;
         int tileMapWidth = tileMap.getWidthPixels();
 
@@ -180,10 +182,157 @@ public class Player {
     
     // 4. Handle falling if we walked off a ledge while moving
     if ((leftKey || rightKey) && isInAir()) {
-        animation = playerJump;
+        // animation = playerJump;
         fall();
     }
 }
+
+   public boolean isInAir() {
+
+      int playerHeight;
+      Point tilePos;
+
+      if (!jumping && !inAir) {   
+	  playerHeight = animation.getHeight();
+	  tilePos = collidesWithTile(x, y + playerHeight + 1); 	// check below player to see if there is a tile
+	
+  	  if (tilePos == null)				   	// there is no tile below player, so player is in the air
+		return true;
+	  else							// there is a tile below player, so the player is on a tile
+		return false;
+      }
+
+      return false;
+   }
+
+
+   private void fall() {
+
+      jumping = false;
+      inAir = true;
+      timeElapsed = 0;
+
+      goingUp = false;
+      goingDown = true;
+
+      startY = y;
+      initialVelocity = 0;
+   }
+
+
+   public void jump () {  
+
+      if (!window.isVisible ()) return;
+
+      jumping = true;
+      timeElapsed = 0;
+
+      goingUp = true;
+      goingDown = false;
+
+      startY = y;
+      initialVelocity = 70;
+   }
+
+
+   public void update () {
+      int distance = 0;
+      int newY = 0;
+
+      timeElapsed++;
+
+      if (jumping || inAir) {
+	   distance = (int) (initialVelocity * timeElapsed - 
+                             4.9 * timeElapsed * timeElapsed);
+	   newY = startY - distance;
+
+	   if (newY > y && goingUp) {
+		goingUp = false;
+ 	  	goingDown = true;
+	   }
+
+	   if (goingUp) {
+		Point tilePos = collidesWithTileUp (x, newY);	
+	   	if (tilePos != null) {				// hits a tile going up
+		   	System.out.println ("Jumping: Collision Going Up!");
+
+      	  		int offsetY = tileMap.getOffsetY();
+			int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+			int bottomTileY = topTileY + TILE_SIZE;
+
+		   	y = bottomTileY;
+		   	fall();
+		}
+	   	else {
+			y = newY;
+			System.out.println ("Jumping: No collision.");
+	   	}
+            }
+	    else
+	    if (goingDown) {			
+		Point tilePos = collidesWithTileDown (x, newY);	
+	   	if (tilePos != null) {				// hits a tile going up
+		    System.out.println ("Jumping: Collision Going Down!");
+	  	    int playerHeight = animation.getHeight();
+		    goingDown = false;
+
+      	            int offsetY = tileMap.getOffsetY();
+		    int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+
+	            y = topTileY - playerHeight;
+	  	    jumping = false;
+		    inAir = false;
+	       }
+	       else {
+		    y = newY;
+		    System.out.println ("Jumping: No collision.");
+	       }
+	   }
+      }
+   }
+
+   public void setKey(int direction, boolean isPressed) {
+    if (direction == 1) leftKey = isPressed;
+    if (direction == 2) rightKey = isPressed;
+    if (direction == 3) jumpKey = isPressed;
+	}
+
+   public void moveUp () {
+
+      if (!window.isVisible ()) return;
+
+      y = y - DY;
+   }
+
+
+   public int getX() {
+      return x;
+   }
+
+
+   public void setX(int x) {
+      this.x = x;
+   }
+
+
+   public int getY() {
+      return y;
+   }
+
+
+   public void setY(int y) {
+      this.y = y;
+   }
+
+
+   public GameAnimation getAnimation() {
+      return animation;
+   }
+
+   public Rectangle2D.Double getBoundingRectangle() {
+         return new Rectangle2D.Double (x, y, animation.getWidth(), animation.getHeight());
+   }
+
 /*
 
    public Point collidesWithTile(int newX, int newY) {
@@ -287,148 +436,5 @@ public class Player {
       }
    }
 	  */
-
-
-   public boolean isInAir() {
-
-      int playerHeight;
-      Point tilePos;
-
-      if (!jumping && !inAir) {   
-	  playerHeight = playerIdle.getHeight();
-	  tilePos = collidesWithTile(x, y + playerHeight + 1); 	// check below player to see if there is a tile
-	
-  	  if (tilePos == null)				   	// there is no tile below player, so player is in the air
-		return true;
-	  else							// there is a tile below player, so the player is on a tile
-		return false;
-      }
-
-      return false;
-   }
-
-
-   private void fall() {
-
-      jumping = false;
-      inAir = true;
-      timeElapsed = 0;
-
-      goingUp = false;
-      goingDown = true;
-
-      startY = y;
-      initialVelocity = 0;
-   }
-
-
-   public void jump () {  
-
-      if (!window.isVisible ()) return;
-
-      jumping = true;
-      timeElapsed = 0;
-
-      goingUp = true;
-      goingDown = false;
-
-      startY = y;
-      initialVelocity = 70;
-   }
-
-
-   public void update () {
-      int distance = 0;
-      int newY = 0;
-
-      timeElapsed++;
-
-      if (jumping || inAir) {
-	   distance = (int) (initialVelocity * timeElapsed - 
-                             4.9 * timeElapsed * timeElapsed);
-	   newY = startY - distance;
-
-	   if (newY > y && goingUp) {
-		goingUp = false;
- 	  	goingDown = true;
-	   }
-
-	   if (goingUp) {
-		Point tilePos = collidesWithTileUp (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-		   	System.out.println ("Jumping: Collision Going Up!");
-
-      	  		int offsetY = tileMap.getOffsetY();
-			int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
-			int bottomTileY = topTileY + TILE_SIZE;
-
-		   	y = bottomTileY;
-		   	fall();
-		}
-	   	else {
-			y = newY;
-			System.out.println ("Jumping: No collision.");
-	   	}
-            }
-	    else
-	    if (goingDown) {			
-		Point tilePos = collidesWithTileDown (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-		    System.out.println ("Jumping: Collision Going Down!");
-	  	    int playerHeight = playerIdle.getHeight();
-		    goingDown = false;
-
-      	            int offsetY = tileMap.getOffsetY();
-		    int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
-
-	            y = topTileY - playerHeight;
-	  	    jumping = false;
-		    inAir = false;
-	       }
-	       else {
-		    y = newY;
-		    System.out.println ("Jumping: No collision.");
-	       }
-	   }
-      }
-   }
-
-   public void setKey(int direction, boolean isPressed) {
-    if (direction == 1) leftKey = isPressed;
-    if (direction == 2) rightKey = isPressed;
-    if (direction == 3) jumpKey = isPressed;
-	}
-
-   public void moveUp () {
-
-      if (!window.isVisible ()) return;
-
-      y = y - DY;
-   }
-
-
-   public int getX() {
-      return x;
-   }
-
-
-   public void setX(int x) {
-      this.x = x;
-   }
-
-
-   public int getY() {
-      return y;
-   }
-
-
-   public void setY(int y) {
-      this.y = y;
-   }
-
-
-   public PlayerAnimation getAnimation() {
-      return animation;
-   }
 
 }
