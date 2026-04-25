@@ -1,3 +1,6 @@
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JFrame;
@@ -5,11 +8,9 @@ import javax.swing.JFrame;
 
 public class AnimationManager {
 
-	String pathName = "images/animations";
+	private String pathName = "images/animations";
 
-	private String animNames[] = new String[50];
-
-    ArrayList<GameAnimation> animations;
+    private static ArrayList<GameAnimation> animations;
 
   	private JFrame window;			// JFrame on which backgrounds are drawn
 
@@ -19,8 +20,19 @@ public class AnimationManager {
 			File folder = new File(pathName);
 			File[] files = folder.listFiles();
             animations = new ArrayList<>();
+
 			for (File file : files) {
-                animations.add(new GameAnimation(file.getName()));
+                Image stripImage = ImageManager.loadImage("images/animations/" + file.getName());
+                BufferedImage src = new BufferedImage(stripImage.getWidth(null), stripImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = src.createGraphics();
+                g2d.drawImage(stripImage, 0, 0, null);
+                g2d.dispose();
+                
+                Image flipImage = ImageManager.hFlipImage(src);
+                String fileName = file.getName().substring(0, file.getName().length() - 4);
+
+                animations.add(new GameAnimation(stripImage, fileName));
+                animations.add(new GameAnimation(flipImage, fileName + "Flip"));
 			}
   	}
 
@@ -36,7 +48,7 @@ public class AnimationManager {
         }
     }
 
-    public GameAnimation loadAnimation(String animName){
+    public static GameAnimation loadAnimation(String animName){
         for(GameAnimation animation : animations){
             if(animation.getName().equals(animName)){
                 return animation;

@@ -3,7 +3,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.LinkedList;
-import javax.swing.JFrame;
 
 public class TileMap {
 
@@ -14,13 +13,14 @@ public class TileMap {
     private int offsetY;
 
     private LinkedList sprites;
-    private Player player; 
+    private Player player;
+    private Collectible c;
 
     public BackgroundManager bgManager;
-    private JFrame window;
+    private GameWindow window;
     private Dimension dimension;
 
-    public TileMap(JFrame window, int width, int height) {
+    public TileMap(GameWindow window, int width, int height) {
         this.window = window;
         dimension = window.getSize();
 
@@ -37,14 +37,13 @@ public class TileMap {
         bgManager = new BackgroundManager(window, 12);
         
         tiles = new Image[mapWidth][mapHeight];
-        sprites = new LinkedList();
-        
-       
+        sprites = new LinkedList();       
     }
 
  
     public void setPlayer(Player player) {
         this.player = player;
+        c = new Collectible(window, player);
     }
 
     public void draw(Graphics2D g2) {
@@ -85,13 +84,9 @@ public class TileMap {
             }
         }
 
-        /*
-        g2.drawImage(player.getAnimation(),
-            Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()),
-            null);
-        */
        player.getAnimation().draw(g2, Math.round(player.getX()) + offsetX, Math.round(player.getY()));
+       c.getAnimation().draw(g2, Math.round(c.getX()) + offsetX, Math.round(c.getY()));
+
     }
 
     
@@ -122,7 +117,16 @@ public class TileMap {
     public void moveRight() {}
     public void jump() {}
     public void update() {
-       
+        player.update();
+
+        if (c.collidesWithPlayer()) {
+            window.endLevel();
+            return;
+        }
+
+        if (c.collidesWithPlayer()) {
+            window.endLevel();
+        }
     }
     public int getOffsetY() {
     return offsetY;

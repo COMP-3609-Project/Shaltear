@@ -14,7 +14,6 @@ public class Player {
    private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
-   private AnimationManager animManager;
 
    private int x;			// x-position of player's sprite
    private int y;			// y-position of player's sprite
@@ -22,7 +21,7 @@ public class Player {
    Graphics2D g2;
    private Dimension dimension;
 
-   private GameAnimation animation, playerIdle, playerLeft, playerRight, playerJump;
+   private GameAnimation animation;
 
    private boolean jumping;
    private int timeElapsed;
@@ -38,21 +37,16 @@ public class Player {
    private int startAir;
 
 
-   public Player (JFrame window, TileMap t, BackgroundManager b, AnimationManager a) {
+   public Player (JFrame window, TileMap t, BackgroundManager b) {
       this.window = window;
 
       tileMap = t;			// tile map on which the player's sprite is displayed
       bgManager = b;			// instance of BackgroundManager
-      animManager = a;
 
       goingUp = goingDown = false;
       inAir = false;
-
-      playerIdle = animManager.loadAnimation("SkeletonIdle.png");
-      playerLeft = animManager.loadAnimation("PlayerLeft.png");
-      playerRight = animManager.loadAnimation("PlayerRight.png");
-      // playerJump = animManager.loadAnimation("PlayerJump.png");
-      animation = playerIdle;
+   
+      animation = AnimationManager.loadAnimation("PlayerIdle");
    }
 
 
@@ -134,57 +128,63 @@ public class Player {
 
  public void handleMovement() {
    if(!jumping && !inAir && !leftKey && !rightKey){
-    animation = playerIdle;
+      if(animation.getName().equals("PlayerMove")){
+         animation = AnimationManager.loadAnimation("PlayerIdle");
+      }else if(animation.getName().equals("PlayerMoveFlip")){
+         animation = AnimationManager.loadAnimation("PlayerIdleFlip");
+      }
+
    }
-    // 1. Handle Jumping (Upward trigger)
-    if (jumpKey && !jumping && !inAir) {
-        // animation = playerJump;
-        jump();
-    }
 
-    // 2. Handle Left Movement
-    if (leftKey) {
+   // 1. Handle Jumping (Upward trigger)
+   if (jumpKey && !jumping && !inAir) {
+      // animation = playerJump;
+      jump();
+   }
+
+   // 2. Handle Left Movement
+   if (leftKey) {
       if(!jumping && !inAir){
-        animation = playerLeft;
+         animation = AnimationManager.loadAnimation("PlayerMoveFlip");
       }
-        int newX = x - DX;
-        if (newX >= 0) {
-            Point tilePos = collidesWithTile(newX, y);
-            if (tilePos == null) {
-                x = newX;
-                bgManager.moveLeft();
-            } else {
-                x = ((int) tilePos.getX() + 1) * TILE_SIZE; // Flush with tile
-            }
-        }
-    }
+      int newX = x - DX;
+      if (newX >= 0) {
+         Point tilePos = collidesWithTile(newX, y);
+         if (tilePos == null) {
+            x = newX;
+            bgManager.moveLeft();
+         } else {
+            x = ((int) tilePos.getX() + 1) * TILE_SIZE; // Flush with tile
+         }
+      }
+   }
 
-    // 3. Handle Right Movement
-    if (rightKey) {
+   // 3. Handle Right Movement
+   if (rightKey) {
       if(!jumping && !inAir){
-        animation = playerRight;
+         animation = AnimationManager.loadAnimation("PlayerMove");
       }
 
-        int playerWidth = animation.getWidth();
-        int newX = x + DX;
-        int tileMapWidth = tileMap.getWidthPixels();
+      int playerWidth = animation.getWidth();
+      int newX = x + DX;
+      int tileMapWidth = tileMap.getWidthPixels();
 
-        if (newX + playerWidth < tileMapWidth) {
-            Point tilePos = collidesWithTile(newX + playerWidth, y);
-            if (tilePos == null) {
-                x = newX;
-                bgManager.moveRight();
-            } else {
-                x = ((int) tilePos.getX()) * TILE_SIZE - playerWidth; // Flush with tile
-            }
-        }
-    }
-    
-    // 4. Handle falling if we walked off a ledge while moving
-    if ((leftKey || rightKey) && isInAir()) {
-        // animation = playerJump;
-        fall();
-    }
+      if (newX + playerWidth < tileMapWidth) {
+         Point tilePos = collidesWithTile(newX + playerWidth, y);
+         if (tilePos == null) {
+            x = newX;
+            bgManager.moveRight();
+         } else {
+            x = ((int) tilePos.getX()) * TILE_SIZE - playerWidth; // Flush with tile
+         }
+      }
+}
+
+// 4. Handle falling if we walked off a ledge while moving
+   if ((leftKey || rightKey) && isInAir()) {
+      // animation = playerJump;
+      fall();
+   }
 }
 
    public boolean isInAir() {

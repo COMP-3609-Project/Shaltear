@@ -1,8 +1,6 @@
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.util.ArrayList;
-import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 
 
@@ -16,7 +14,7 @@ public class TileMapManager {
     private ArrayList<Image> tiles;
     private int currentMap = 0;
 
-    private JFrame window;
+    private GameWindow window;
 
 /*
     private GraphicsConfiguration gc;
@@ -30,7 +28,7 @@ public class TileMapManager {
     private Sprite flySprite;
 */
 
-    public TileMapManager(JFrame window) {
+    public TileMapManager(GameWindow window) {
 	    this.window = window;
 
         loadTileImages();
@@ -42,7 +40,7 @@ public class TileMapManager {
      public TileMap loadMap(String filename)
         throws IOException
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
         int mapWidth = 0;
         int mapHeight = 0;
 
@@ -157,6 +155,30 @@ public class TileMapManager {
                 tiles.add(tileImage);
                 ch++;
             }
+        }
+    }
+
+/*
+    private void addSprite(TileMap map,
+        Sprite hostSprite, int tileX, int tileY)
+    {
+        if (hostSprite != null) {
+            // clone the sprite from the "host"
+            Sprite sprite = (Sprite)hostSprite.clone();
+
+            // center the sprite
+            sprite.setX(
+                TileMapRenderer.tilesToPixels(tileX) +
+                (TileMapRenderer.tilesToPixels(1) -
+                sprite.getWidth()) / 2);
+
+            // bottom-justify the sprite
+            sprite.setY(
+                TileMapRenderer.tilesToPixels(tileY + 1) -
+                sprite.getHeight());
+
+            // add it to the map
+            map.addSprite(sprite);
         }
     }
 

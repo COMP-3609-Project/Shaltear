@@ -21,7 +21,7 @@ public class GameAnimation {
 
 	private String name;
 
-	public GameAnimation(String file) {
+	public GameAnimation(Image spriteSheet, String file) {
 
 		animation = new Animation(true);	// run animation once
 
@@ -35,18 +35,16 @@ public class GameAnimation {
 
 		this.name = file.substring(2);
 
-		Image stripImage = ImageManager.loadImage("images/animations/" + file);
-
 		int numFrames = Integer.parseInt(file.substring(0, 2));
 
-		int imageWidth = (int) stripImage.getWidth(null) / numFrames;
-		int imageHeight = stripImage.getHeight(null);
+		int imageWidth = (int) spriteSheet.getWidth(null) / numFrames;
+		int imageHeight = spriteSheet.getHeight(null);
 
 		for(int i=0;i<numFrames;i++){
 			BufferedImage frameImage = new BufferedImage (imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) frameImage.getGraphics();
      
-			g.drawImage(stripImage, 
+			g.drawImage(spriteSheet, 
 					0, 0, imageWidth, imageHeight,
 					i*imageWidth, 0, (i*imageWidth)+imageWidth, imageHeight,
 					null);

@@ -1,5 +1,6 @@
 import java.awt.*;
-import java.awt.event.*;            
+import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class GameWindow extends JFrame implements
         try {
             isRunning = true;
             while (isRunning) {
-                if (!isPaused) {
+                if (!isPaused && !gameOver) {
                     gameUpdate();
                 }
                 screenUpdate();
@@ -113,10 +114,10 @@ public class GameWindow extends JFrame implements
                 tileMap = tileManager.loadMap(filename) ;
                 
                 // Re-initialize player for new level if needed
-                player = new Player(this, tileMap, new BackgroundManager(this, 8), this.animManager);
+                player = new Player(this, tileMap, new BackgroundManager(this, 8));
                 player.setX(64); 
                 player.setY(64);
-                
+                tileMap.setPlayer(player);
             } catch (IOException e) {
                 gameOver = true;
             }
@@ -142,6 +143,12 @@ public class GameWindow extends JFrame implements
             tileMap.draw(g2);
         }
 
+		if (gameOver) {
+			Color darken = new Color (0, 0, 0, 125);
+			g2.setColor (darken);
+			g2.fill (new Rectangle2D.Double (0, 0, this.getWidth(), this.getHeight()));
+		}
+
         imageEffect.draw(g2);
         drawButtons(g2);
     }
@@ -156,7 +163,7 @@ public class GameWindow extends JFrame implements
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
                 
-                player = new Player(this, tileMap, tileMap.bgManager, animManager);
+                player = new Player(this, tileMap, tileMap.bgManager);
                 player.setX(192);
                 player.setY(500);
 
@@ -172,6 +179,11 @@ public class GameWindow extends JFrame implements
             animManager.startAnimations();
         }
     }
+
+    public void endLevel() {
+		level = level + 1;
+		levelChange = true;
+	}
 
     // --- INPUT HANDLING ---
 
