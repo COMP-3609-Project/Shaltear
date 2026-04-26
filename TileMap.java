@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 public class TileMap {
@@ -83,13 +84,37 @@ public class TileMap {
                 }
             }
         }
+        for (Object s : sprites) {
+            
+        if (s instanceof Enemy) {
+        Enemy e = (Enemy) s;
+        if (e.isActive()) { 
+            GameAnimation anim = e.getAnimation();
+            
+            // Safety check: ONLY draw if anim is NOT null
+            if (anim != null) {
+                anim.draw(g2, e.getX() + offsetX, e.getY());
+            }
+            Rectangle2D.Double hitbox = e.getBoundingRectangle();
+            g2.setColor(Color.RED); // Choose a bright color for the outline
+            g2.drawRect(
+                (int)hitbox.x + offsetX, // Adjust for camera scroll
+                (int)hitbox.y,            // Y is absolute in your current setup
+                (int)hitbox.width, 
+                (int)hitbox.height
+            );
+        }
+    }
+}
 
        player.getAnimation().draw(g2, Math.round(player.getX()) + offsetX, Math.round(player.getY()));
        c.getAnimation().draw(g2, Math.round(c.getX()) + offsetX, Math.round(c.getY()));
 
     }
 
-    
+    public LinkedList getSprites() {
+        return sprites;
+    }
 
     public Image getTile(int x, int y) {
         if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) return null;
@@ -118,6 +143,12 @@ public class TileMap {
     public void jump() {}
     public void update() {
         player.update();
+
+        for (Object s : sprites) {
+            if (s instanceof Enemy) {
+                ((Enemy) s).update();
+            }
+        }
 
         if (c.collidesWithPlayer()) {
             window.endLevel();

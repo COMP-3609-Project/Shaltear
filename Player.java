@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 import javax.swing.JFrame;
 
 public class Player {			
@@ -36,6 +37,11 @@ public class Player {
    private int initialVelocity;
    private int startAir;
 
+   private boolean isAttacking = false;
+   private int attackTimer = 0;
+   private static final int ATTACK_DURATION = 10;
+   private static final int ATTACK_RANGE = 50;
+
 
    public Player (JFrame window, TileMap t, BackgroundManager b) {
       this.window = window;
@@ -52,8 +58,8 @@ public class Player {
 
    public Point collidesWithTile(int newX, int newY) {
 
-      	  int playerWidth = animation.getWidth();
-      	  int offsetY = tileMap.getOffsetY();
+     int playerWidth = animation.getWidth();
+     int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTile = tileMap.pixelsToTiles(newY - offsetY);
 
@@ -233,7 +239,45 @@ public class Player {
       startY = y;
       initialVelocity = 70;
    }
+public void attack() {
+    // 1. Prevent "spamming" the attack 
+    if (isAttacking) return;
 
+    
+    isAttacking = true;
+    attackTimer = 15; 
+
+    if (animation.getName().contains("Flip")) {
+        animation = AnimationManager.loadAnimation("PlayerAttackFlip");
+    } else {
+        animation = AnimationManager.loadAnimation("PlayerAttack");
+    }
+
+    int range = 2; 
+    Rectangle2D.Double attackHitbox;
+
+    if (animation.getName().contains("Flip")) {
+        // Facing Left: Hitbox starts 'range' pixels to the left of the player's X
+        attackHitbox = new Rectangle2D.Double(x - range, y, range, animation.getHeight());
+    } else {
+        // Facing Right: Hitbox starts at the player's right edge (x + width)
+        attackHitbox = new Rectangle2D.Double(x + animation.getWidth(), y, range, animation.getHeight());
+    }
+
+    LinkedList allSprites = tileMap.getSprites();
+    
+    for (Object s : allSprites) {
+        if (s instanceof Enemy) {
+            Enemy e = (Enemy) s;
+            
+            if (e.isActive() && attackHitbox.intersects(e.getBoundingRectangle())) {
+                e.deActivate(); // Kill the enemy
+                
+                System.out.println("Enemy defeated!");
+            }
+        }
+    }
+}
 
    public void update () {
       int distance = 0;
@@ -289,6 +333,16 @@ public class Player {
 	       }
 	   }
       }
+      if (isAttacking) {
+        attackTimer--;
+        if (attackTimer <= 0) {
+            isAttacking = false;
+            // Return to idle based on direction
+            animation = animation.getName().contains("Flip") ? 
+                        AnimationManager.loadAnimation("PlayerIdleFlip") : 
+                        AnimationManager.loadAnimation("PlayerIdle");
+        }
+    }
    }
 
    public void setKey(int direction, boolean isPressed) {

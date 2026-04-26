@@ -173,6 +173,11 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
+            Enemy testEnemy = new Enemy(this, this.player, this.tileMap, this.tileMap.bgManager);
+
+            this.tileMap.getSprites().add(testEnemy);
+            testEnemy.activate();
+
             imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);
             gameThread.start();
@@ -197,8 +202,6 @@ public class GameWindow extends JFrame implements
             isRunning = false;
             return;
         }
-
-        
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
             player.setKey(1, true);
         }
@@ -207,6 +210,9 @@ public class GameWindow extends JFrame implements
         }
         if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_W) {
             player.setKey(3, true);
+        }
+        if (keyCode == KeyEvent.VK_F) { // Press F to attack
+            player.attack();
         }
     }
 
