@@ -173,10 +173,7 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
-            Enemy testEnemy = new Enemy(this, this.player, this.tileMap, this.tileMap.bgManager);
-
-            this.tileMap.getSprites().add(testEnemy);
-            testEnemy.activate();
+            tileMap.spawnEnemies();
 
             imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);

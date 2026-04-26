@@ -142,7 +142,7 @@ public class Player {
 
    }
 
-   // 1. Handle Jumping (Upward trigger)
+   // 1. Handle Jumping 
    if (jumpKey && !jumping && !inAir) {
       // animation = playerJump;
       jump();
@@ -271,9 +271,9 @@ public void attack() {
             Enemy e = (Enemy) s;
             
             if (e.isActive() && attackHitbox.intersects(e.getBoundingRectangle())) {
-                e.deActivate(); // Kill the enemy
+                e.die(); // Kill the enemy
                 
-                System.out.println("Enemy defeated!");
+                System.out.println("Enemyaa defeated!");
             }
         }
     }
@@ -298,7 +298,6 @@ public void attack() {
 	   if (goingUp) {
 		Point tilePos = collidesWithTileUp (x, newY);	
 	   	if (tilePos != null) {				// hits a tile going up
-		   	System.out.println ("Jumping: Collision Going Up!");
 
       	  		int offsetY = tileMap.getOffsetY();
 			int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
@@ -309,14 +308,12 @@ public void attack() {
 		}
 	   	else {
 			y = newY;
-			System.out.println ("Jumping: No collision.");
 	   	}
             }
 	    else
 	    if (goingDown) {			
 		Point tilePos = collidesWithTileDown (x, newY);	
 	   	if (tilePos != null) {				// hits a tile going up
-		    System.out.println ("Jumping: Collision Going Down!");
 	  	    int playerHeight = animation.getHeight();
 		    goingDown = false;
 
@@ -329,7 +326,6 @@ public void attack() {
 	       }
 	       else {
 		    y = newY;
-		    System.out.println ("Jumping: No collision.");
 	       }
 	   }
       }
@@ -386,109 +382,5 @@ public void attack() {
    public Rectangle2D.Double getBoundingRectangle() {
          return new Rectangle2D.Double (x, y, animation.getWidth(), animation.getHeight());
    }
-
-/*
-
-   public Point collidesWithTile(int newX, int newY) {
-
-	 int playerWidth = playerImage.getWidth(null);
-	 int playerHeight = playerImage.getHeight(null);
-
-      	 int fromX = Math.min (x, newX);
-	 int fromY = Math.min (y, newY);
-	 int toX = Math.max (x, newX);
-	 int toY = Math.max (y, newY);
-
-	 int fromTileX = tileMap.pixelsToTiles (fromX);
-	 int fromTileY = tileMap.pixelsToTiles (fromY);
-	 int toTileX = tileMap.pixelsToTiles (toX + playerWidth - 1);
-	 int toTileY = tileMap.pixelsToTiles (toY + playerHeight - 1);
-
-	 for (int x=fromTileX; x<=toTileX; x++) {
-		for (int y=fromTileY; y<=toTileY; y++) {
-			if (tileMap.getTile(x, y) != null) {
-				Point tilePos = new Point (x, y);
-				return tilePos;
-			}
-		}
-	 }
-	
-	 return null;
-   }
-*/
-
-
-   /*public synchronized void move (int direction) {
-
-      int newX = x;
-      Point tilePos = null;
-
-      if (!window.isVisible ()) return;
-      
-      if (direction == 1) {		// move left
-	  playerImage = playerLeftImage;
-          newX = x - DX;
-	  if (newX < 0) {
-		x = 0;
-		return;
-	  }
-		
-	  tilePos = collidesWithTile(newX, y);
-      }	
-      else				
-      if (direction == 2) {		// move right
-	  playerImage = playerRightImage;
-      	  int playerWidth = playerImage.getWidth(null);
-          newX = x + DX;
-
-      	  int tileMapWidth = tileMap.getWidthPixels();
-
-	  if (newX + playerImage.getWidth(null) >= tileMapWidth) {
-	      x = tileMapWidth - playerImage.getWidth(null);
-	      return;
-	  }
-
-	  tilePos = collidesWithTile(newX+playerWidth, y);			
-      }
-      else				// jump
-      if (direction == 3 && !jumping) {	
-          jump();
-	  return;
-      }
-    
-      if (tilePos != null) {  
-         if (direction == 1) {
-	     System.out.println (": Collision going left");
-             x = ((int) tilePos.getX() + 1) * TILE_SIZE;	   // keep flush with right side of tile
-	 }
-         else
-         if (direction == 2) {
-	     System.out.println (": Collision going right");
-      	     int playerWidth = playerImage.getWidth(null);
-             x = ((int) tilePos.getX()) * TILE_SIZE - playerWidth; // keep flush with left side of tile
-	 }
-      }
-      else {
-          if (direction == 1) {
-	      x = newX;
-	      bgManager.moveLeft();
-          }
-	  else
-	  if (direction == 2) {
-	      x = newX;
-	      bgManager.moveRight();
-   	  }
-
-          if (isInAir()) {
-	      System.out.println("In the air. Starting to fall.");
-	      if (direction == 1) {				// make adjustment for falling on left side of tile
-      	          int playerWidth = playerImage.getWidth(null);
-		  x = x - playerWidth + DX;
-	      }
-	      fall();
-          }
-      }
-   }
-	  */
 
 }

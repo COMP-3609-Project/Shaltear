@@ -35,20 +35,10 @@ public class Enemy {
      		width = 60;
       		height = 50;
 
-      		this.p0 = new Point(192, 950);
-      		this.p1 = new Point(240, 950);
-      		this.p2 = new Point(280, 950);
-
       		this.player = p;
 
             animation = AnimationManager.loadAnimation("SkeletonIdle");
     	  	soundManager = SoundManager.getInstance();
-      		bezierCurveMotion = new BezierCurveMotion (window, this, p0, p1, p2);
-
-
-			if (this.animation == null) {
-        	System.out.println("Error: Could not load SkeletonIdle.png. Check your images folder.");
-    		}
    	}
 
 
@@ -115,13 +105,21 @@ public class Enemy {
 		bezierCurveMotion.activate();
 	}
 
+	
+	public void setMovementPoints(Point p0, Point p1, Point p2) {
+    	this.p0 = p0;
+    	this.p1 = p1;
+    	this.p2 = p2;
+    	this.bezierCurveMotion = new BezierCurveMotion(window, this, p0, p1, p2);
+	}
+
 	public void die() {
-    isDead = true;
-    deActivate(); 
+    	isDead = true;
+    	deActivate(); 
 	}
 
 	public boolean isDead() {
-    return isDead;
+    	return isDead;
 	}
 
 	public void deActivate () {
