@@ -1,4 +1,4 @@
-# Map file for tile-based game
+# Map file for tile-based game 
 # (Lines that start with '#' are comments)
 # The tiles are:
 #   (Space) Empty tile
@@ -9,8 +9,17 @@
 #   1       Bad Guy 1 (grub)
 #   2       Bad Guy 2 (fly)
 
-                      IIIIIII      IIIIIII   
-                                     IIIII           EF
- II              EF                                 EAD         II
-        EF       CD                                EGAD      
-BBBBBBBBGHBBBBBBBGHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGAAHBBBBBBBBBBB
+F
+D
+D
+D                                                                                            EB
+D         IIIIIII              IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII               CA
+D                      o o o                I                   EBBBBBBBBBBBBBF              CA
+D                     IIIIIII               I                   CAAAAAAAAAAAAAD              CA
+D                                           I                   CAAAAAAAAAAAAAHF             CA
+D                                                        IIIII  CAAAAAAAAAAAAAAD             CA
+D                      IIIII                                    CAAAAAAAAAAAAAAHF            CA
+D         III                                                   CAAAAAAAAAAAAAAAD            CA
+D                                   IIIIIIIIIIIII               CAAAAAAAAAAAAAAAHF           CA
+D              EBBBBBBBBBBBBBBBF     o o o o o o              * CAAAAAAAAAAAAAAAAD           CA
+HBBBBBBBBBBBBBBGAAAAAAAAAAAAAAAHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGAAAAAAAAAAAAAAAAHBBBBBBBBBBBGA

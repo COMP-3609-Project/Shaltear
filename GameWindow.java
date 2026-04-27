@@ -115,8 +115,6 @@ public class GameWindow extends JFrame implements
                 
                 // Re-initialize player for new level if needed
                 player = new Player(this, tileMap, new BackgroundManager(this, 8));
-                player.setX(64); 
-                player.setY(64);
                 tileMap.setPlayer(player);
             } catch (IOException e) {
                 gameOver = true;
@@ -162,11 +160,7 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
-                
                 player = new Player(this, tileMap, tileMap.bgManager);
-                player.setX(192);
-                player.setY(500);
-
                 tileMap.setPlayer(player);
             } catch (IOException e) {
                 System.out.println(e);

@@ -11,6 +11,8 @@ public class Player {
 
    private static final int TILE_SIZE = 64;
 
+   private static int LEVEL = 0;
+
    private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
@@ -47,6 +49,22 @@ public class Player {
       inAir = false;
    
       animation = AnimationManager.loadAnimation("PlayerIdle");
+
+      LEVEL++;
+      if(LEVEL==1 || LEVEL == 3){
+         x = 300;
+         y = 736;
+      }
+      else if(LEVEL == 2){
+         x = 300;
+         y = 736;
+      }
+
+   }
+   
+   // Get current level (before increment)
+   public static int getLevel() {
+      return LEVEL;
    }
 
 
@@ -242,52 +260,49 @@ public class Player {
       timeElapsed++;
 
       if (jumping || inAir) {
-	   distance = (int) (initialVelocity * timeElapsed - 
-                             4.9 * timeElapsed * timeElapsed);
-	   newY = startY - distance;
+         distance = (int) (initialVelocity * timeElapsed - 4.9 * timeElapsed * timeElapsed);
+         newY = startY - distance;
 
-	   if (newY > y && goingUp) {
-		goingUp = false;
- 	  	goingDown = true;
-	   }
+         if (newY > y && goingUp) {
+            goingUp = false;
+            goingDown = true;
+         }
 
-	   if (goingUp) {
-		Point tilePos = collidesWithTileUp (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-		   	System.out.println ("Jumping: Collision Going Up!");
+         if (goingUp) {
+            Point tilePos = collidesWithTileUp (x, newY);	
+            if (tilePos != null) {				// hits a tile going up
+               System.out.println ("Jumping: Collision Going Up!");
 
-      	  		int offsetY = tileMap.getOffsetY();
-			int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
-			int bottomTileY = topTileY + TILE_SIZE;
-
-		   	y = bottomTileY;
-		   	fall();
-		}
-	   	else {
-			y = newY;
-			System.out.println ("Jumping: No collision.");
-	   	}
+               int offsetY = tileMap.getOffsetY();
+               int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+               int bottomTileY = topTileY + TILE_SIZE;
+               y = bottomTileY;
+               fall();
+         }
+            else {
+            y = newY;
+            System.out.println ("Jumping: No collision.");
             }
-	    else
-	    if (goingDown) {			
-		Point tilePos = collidesWithTileDown (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-		    System.out.println ("Jumping: Collision Going Down!");
-	  	    int playerHeight = animation.getHeight();
-		    goingDown = false;
+               }
+         else if (goingDown) {			
+            Point tilePos = collidesWithTileDown (x, newY);	
+            if (tilePos != null) {				// hits a tile going up
+               System.out.println ("Jumping: Collision Going Down!");
+               int playerHeight = animation.getHeight();
+               goingDown = false;
 
-      	            int offsetY = tileMap.getOffsetY();
-		    int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+               int offsetY = tileMap.getOffsetY();
+               int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
 
-	            y = topTileY - playerHeight;
-	  	    jumping = false;
-		    inAir = false;
-	       }
-	       else {
-		    y = newY;
-		    System.out.println ("Jumping: No collision.");
-	       }
-	   }
+               y = topTileY - playerHeight;
+               jumping = false;
+               inAir = false;
+            }
+            else {
+               y = newY;
+               System.out.println ("Jumping: No collision.");
+            }
+         }
       }
    }
 

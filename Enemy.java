@@ -1,18 +1,12 @@
-import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
-
 import javax.swing.JFrame;
-import javax.swing.JWindow;
 
 
 public class Enemy {
 
    	private int x, y;
    	private int width, height;
-			
-   	private Image alienImage;
 
    	private Player player;
   	private SoundManager soundManager;
@@ -26,13 +20,11 @@ public class Enemy {
     private JFrame window;
     private TileMap tileMap;
     private BackgroundManager bgManager;
-    private AnimationManager animManager;
 
-   	public Enemy (JFrame w, Player p, TileMap t, BackgroundManager b, AnimationManager a) {
+   	public Enemy (JFrame w, Player p, TileMap t, BackgroundManager b) {
       		window = w;
             tileMap = t;
             bgManager = b;
-            animManager = a;
 
      		width = 60;
       		height = 50;
@@ -42,7 +34,7 @@ public class Enemy {
       		this.p2 = new Point(200, 200);
 
       		this.player = p;
-            enemyIdle = animManager.loadAnimation("SkeletonIdle.png");
+            enemyIdle = AnimationManager.loadAnimation("SkeletonIdle");
             animation = enemyIdle;
 
       		soundManager = SoundManager.getInstance();
