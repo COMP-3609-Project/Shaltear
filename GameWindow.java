@@ -101,7 +101,10 @@ public class GameWindow extends JFrame implements
         if (!isPaused)
             animManager.updateAnimations();
         
-        
+        if (player.getLives() <= 0) {
+            gameOver = true;
+            isRunning = false; // Or trigger a specific Game Over screen
+        }
         
         imageEffect.update();
         
@@ -149,6 +152,11 @@ public class GameWindow extends JFrame implements
 			g2.fill (new Rectangle2D.Double (0, 0, this.getWidth(), this.getHeight()));
 		}
 
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 24));
+        g2.drawString("LIVES: " + player.getLives(), 50, 50);
+        
         imageEffect.draw(g2);
         drawButtons(g2);
     }

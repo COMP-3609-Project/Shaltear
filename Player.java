@@ -24,6 +24,8 @@ public class Player {
 
    private GameAnimation animation;
 
+   private int lives = 3;
+
    private boolean jumping;
    private int timeElapsed;
    private int startY;
@@ -39,8 +41,8 @@ public class Player {
 
    private boolean isAttacking = false;
    private int attackTimer = 0;
-   private static final int ATTACK_DURATION = 10;
-   private static final int ATTACK_RANGE = 50;
+   private int invincibleTimer = 0;
+   private static final int INVINCIBILITY_DURATION = 180;
 
 
    public Player (JFrame window, TileMap t, BackgroundManager b) {
@@ -278,10 +280,24 @@ public void attack() {
         }
     }
 }
+   public void takeDamage() {
+      if (invincibleTimer > 0) {
+         return;
+      }
+      lives--;
+      invincibleTimer = INVINCIBILITY_DURATION;
+      System.out.println("Ouch! Lives remaining: " + lives);
+}
+
+
 
    public void update () {
       int distance = 0;
       int newY = 0;
+
+      if (this.invincibleTimer > 0) {
+            this.invincibleTimer--;
+        }
 
       timeElapsed++;
 
@@ -354,7 +370,9 @@ public void attack() {
       y = y - DY;
    }
 
-
+   public int getLives() { 
+      return lives;
+    }
    public int getX() {
       return x;
    }
@@ -378,6 +396,10 @@ public void attack() {
    public GameAnimation getAnimation() {
       return animation;
    }
+
+   public boolean isInvincible() {
+        return invincibleTimer > 0;
+    }
 
    public Rectangle2D.Double getBoundingRectangle() {
          return new Rectangle2D.Double (x, y, animation.getWidth(), animation.getHeight());

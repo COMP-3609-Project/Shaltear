@@ -115,6 +115,14 @@ public class TileMap {
        g2.setColor(Color.WHITE);
        g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
        player.getAnimation().draw(g2, Math.round(player.getX()) + offsetX, Math.round(player.getY()));
+       Rectangle2D.Double pBox = player.getBoundingRectangle();
+g2.setColor(Color.GREEN); // Green for the player, Red for enemies
+g2.drawRect(
+    (int)pBox.x + offsetX, // Must add offsetX to stay aligned with the player
+    (int)pBox.y,            // Y remains absolute
+    (int)pBox.width, 
+    (int)pBox.height
+);
        c.getAnimation().draw(g2, Math.round(c.getX()) + offsetX, Math.round(c.getY()));
 
     }

@@ -23,8 +23,11 @@ public class Enemy {
     private JFrame window;
     private TileMap tileMap;
     private BackgroundManager bgManager;
-    
 
+	private int playerInsideTimer = 0;
+	private static final int ATTACK_DELAY = 30;
+	private int attackAnimTimer = 0;
+	private boolean isAttacking = false;
 	private boolean isDead = false;
 
    	public Enemy (JFrame w, Player p, TileMap t, BackgroundManager b) {
@@ -37,7 +40,7 @@ public class Enemy {
 
       		this.player = p;
 
-            animation = AnimationManager.loadAnimation("SkeletonIdle");
+            animation = AnimationManager.loadAnimation("SkeletonWalk");
     	  	soundManager = SoundManager.getInstance();
    	}
 
@@ -47,15 +50,42 @@ public class Enemy {
       		if (!window.isVisible () || !bezierCurveMotion.isActive()) {
 				return;
 			}
-			
+			if(!isAttacking){
       		bezierCurveMotion.update();
+			}
+			if (isAttacking) {
+        	attackAnimTimer--;
+        	if (attackAnimTimer <= 0) {
+            isAttacking = false; 
+        		}
+    		}
+			if(!isAttacking){
+			if (bezierCurveMotion.isMovingForward()) {
+        
+        	if (!animation.getName().equals("SkeletonWalk")) {
+            animation = AnimationManager.loadAnimation("SkeletonWalk");
+        	}
+    		} else {
+        	if (!animation.getName().equals("SkeletonWalkFlip")) {
+            animation = AnimationManager.loadAnimation("SkeletonWalkFlip");
+        		}
+    			}
+			}
 
       		boolean collision = collidesWithPlayer();
 
 			
 			if (collidesWithPlayer()) {
-             // player.takeDamage();
-        	}
+        	playerInsideTimer++;
+        
+        	// Change to an "Aggressive" animation if you have one
+        	if (playerInsideTimer >= ATTACK_DELAY) {
+            	performAttack();
+            	playerInsideTimer = 0; // Reset timer so they don't hit every frame
+       		 }
+    		} else {
+        	playerInsideTimer = 0; // Reset if the player jumps away
+    	}
       		
    	}
 
@@ -120,6 +150,14 @@ public class Enemy {
 
 	public boolean isDead() {
     	return isDead;
+	}
+
+	private void performAttack() {
+		isAttacking = true;
+		attackAnimTimer = ATTACK_DELAY; 
+    	animation = AnimationManager.loadAnimation("SkeletonAttack");
+   
+    	player.takeDamage();
 	}
 
 	public void deActivate () {

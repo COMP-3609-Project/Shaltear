@@ -18,6 +18,7 @@ public class BezierCurveMotion implements Motion {
 
 	private double t;		// loop curve for t =[0.0, 1.0]
  	private double incr;		// increment for looping t in [0.0, 1.0]
+	private boolean forward = true;
 
 	public BezierCurveMotion (JFrame w, Enemy enemy, 
 				  Point p0, Point p1, Point p2) {
@@ -62,11 +63,13 @@ public class BezierCurveMotion implements Motion {
       		if (t > END) {
 			t = END;
          		incr = INCR * -1.0;
+				forward = false;
 		}
 		else
 		if (t < START) {
 			t = START;
          		incr = INCR;
+				forward = true;
 		}
 
 		int x = (int)((1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x);
@@ -78,5 +81,7 @@ public class BezierCurveMotion implements Motion {
 		enemy.setX(x);
 		enemy.setY(y);
    }
+
+   public boolean isMovingForward() { return forward; }
 
 }
