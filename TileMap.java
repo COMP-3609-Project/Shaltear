@@ -58,11 +58,15 @@ public class TileMap {
 
         int mapWidthPixels = tilesToPixels(mapWidth);
 
-        int offsetX = screenWidth / 2 - Math.round(player.getX()) - TILE_SIZE;
+        int tileOffsetX = screenWidth / 2 - Math.round(player.getX()) - TILE_SIZE;
+        int tileOffsetY = screenHeight / 2 - Math.round(player.getY()) - TILE_SIZE;
+
+        tileOffsetY = Math.min(0, tileOffsetY);
+        tileOffsetY = Math.max(tileOffsetY, screenHeight - tilesToPixels(mapHeight));
+        offsetY = tileOffsetY;
         
-        
-        offsetX = Math.min(offsetX, 0);
-        offsetX = Math.max(offsetX, screenWidth - mapWidthPixels);
+        tileOffsetX = Math.min(tileOffsetX, 0);
+        tileOffsetX = Math.max(tileOffsetX, screenWidth - mapWidthPixels);
 
        
         g2.setColor(Color.black);
@@ -72,18 +76,21 @@ public class TileMap {
         bgManager.draw(g2, 1);
 
         
-        int firstTileX = pixelsToTiles(-offsetX);
+        int firstTileX = pixelsToTiles(-tileOffsetX);
         int lastTileX = firstTileX + pixelsToTiles(screenWidth) + 1;
+
+        int firstTileY = pixelsToTiles(-tileOffsetY);
+        int lastTileY = firstTileY + pixelsToTiles(screenHeight) + 1;
         
-        for (int y = 0; y < mapHeight; y++) {
+        for (int y = firstTileY; y <= lastTileY; y++) {
             for (int x = firstTileX; x <= lastTileX; x++) {
                 Image image = getTile(x, y);
                 if (image != null) {
                     g2.drawImage(image,
-                        tilesToPixels(x) + offsetX,
-                        tilesToPixels(y) + offsetY,
-                        64,
-                        64,
+                        tilesToPixels(x) + tileOffsetX,
+                        tilesToPixels(y) + tileOffsetY,
+                        TILE_SIZE,
+                        TILE_SIZE,
                         null);
                 }
             }
@@ -96,34 +103,26 @@ public class TileMap {
             GameAnimation anim = e.getAnimation();
             
             if (anim != null) {
-                anim.draw(g2, e.getX() + offsetX, e.getY());
+                anim.draw(g2, e.getX() + tileOffsetX, e.getY(), TILE_SIZE, TILE_SIZE);
             }
             Rectangle2D.Double hitbox = e.getBoundingRectangle();
             g2.setColor(Color.RED); 
             g2.drawRect(
-                (int)hitbox.x + offsetX, 
+                (int)hitbox.x + tileOffsetX, 
                 (int)hitbox.y,            
                 (int)hitbox.width, 
                 (int)hitbox.height
             );
         } /*else{
                 g2.setColor(Color.RED);
-                g2.fillRect(e.getX() + offsetX, e.getY(), 64, 64);
+                g2.fillRect(e.getX() + tileOffsetX, e.getY(), 64, 64);
         } */
     }
 }
        g2.setColor(Color.WHITE);
        g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
-       player.getAnimation().draw(g2, Math.round(player.getX()) + offsetX, Math.round(player.getY()));
-       Rectangle2D.Double pBox = player.getBoundingRectangle();
-g2.setColor(Color.GREEN); // Green for the player, Red for enemies
-g2.drawRect(
-    (int)pBox.x + offsetX, // Must add offsetX to stay aligned with the player
-    (int)pBox.y,            // Y remains absolute
-    (int)pBox.width, 
-    (int)pBox.height
-);
-       c.getAnimation().draw(g2, Math.round(c.getX()) + offsetX, Math.round(c.getY()));
+       player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
+       c.getAnimation().draw(g2, Math.round(c.getX()) + tileOffsetX, Math.round(c.getY()), TILE_SIZE/2, TILE_SIZE/2);
 
     }
 
@@ -177,7 +176,7 @@ g2.drawRect(
     public void moveRight() {}
     public void jump() {}
     public void update() {
-        player.update();
+        // player.update();
         aliveCount = 0;
 
         for (Object s : sprites) {

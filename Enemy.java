@@ -1,4 +1,3 @@
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
@@ -8,8 +7,6 @@ public class Enemy {
 
    	private int x, y;
    	private int width, height;
-			
-   	private Image alienImage;
 
    	private Player player;
   	private SoundManager soundManager;
@@ -23,6 +20,8 @@ public class Enemy {
     private JFrame window;
     private TileMap tileMap;
     private BackgroundManager bgManager;
+
+    
 
 	private int playerInsideTimer = 0;
 	private static final int ATTACK_DELAY = 30;
