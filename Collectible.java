@@ -40,7 +40,7 @@ public class Collectible {
 		if (Player.getLevel() == 2) {
 			y = 700;
 		} else {
-			y = 600;
+			y = 700;
 		}
 
 		this.player = player;

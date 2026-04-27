@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 public class TileMap {
@@ -20,6 +22,8 @@ public class TileMap {
     private GameWindow window;
     private Dimension dimension;
 
+    private int aliveCount;
+
     public TileMap(GameWindow window, int width, int height) {
         this.window = window;
         dimension = window.getSize();
@@ -37,7 +41,8 @@ public class TileMap {
         bgManager = new BackgroundManager(window, 12);
         
         tiles = new Image[mapWidth][mapHeight];
-        sprites = new LinkedList();       
+        sprites = new LinkedList();
+ 
     }
 
  
@@ -90,13 +95,60 @@ public class TileMap {
                 }
             }
         }
-
+        for (Object s : sprites) {
+            
+        if (s instanceof Enemy) {
+        Enemy e = (Enemy) s;
+        if (e.isActive()) { 
+            GameAnimation anim = e.getAnimation();
+            
+            if (anim != null) {
+                anim.draw(g2, e.getX() + tileOffsetX, e.getY(), TILE_SIZE, TILE_SIZE);
+            }
+            Rectangle2D.Double hitbox = e.getBoundingRectangle();
+            g2.setColor(Color.RED); 
+            g2.drawRect(
+                (int)hitbox.x + tileOffsetX, 
+                (int)hitbox.y,            
+                (int)hitbox.width, 
+                (int)hitbox.height
+            );
+        } /*else{
+                g2.setColor(Color.RED);
+                g2.fillRect(e.getX() + tileOffsetX, e.getY(), 64, 64);
+        } */
+    }
+}
+       g2.setColor(Color.WHITE);
+       g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
        c.getAnimation().draw(g2, Math.round(c.getX()) + tileOffsetX, Math.round(c.getY()), TILE_SIZE/2, TILE_SIZE/2);
 
     }
 
-    
+    public void spawnEnemies() {
+    for (int i = 0; i < 6; i++) {
+        Enemy enemy = new Enemy(window, player, this, bgManager);
+       
+        int startX = 192 + (i * 500); 
+        int startY = 950; 
+        
+       
+        Point p0 = new Point(startX, startY);
+        Point p1 = new Point(startX + 100, startY);
+        Point p2 = new Point(startX + 200, startY);
+        
+        enemy.setMovementPoints(p0, p1, p2); 
+        enemy.activate();
+        
+        sprites.add(enemy);
+    }
+}
+
+
+    public LinkedList getSprites() {
+        return sprites;
+    }
 
     public Image getTile(int x, int y) {
         if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) return null;
@@ -125,16 +177,26 @@ public class TileMap {
     public void jump() {}
     public void update() {
         // player.update();
+        aliveCount = 0;
 
-        if (c.collidesWithPlayer()) {
-            window.endLevel();
-            return;
+        for (Object s : sprites) {
+            if (s instanceof Enemy) {
+                Enemy e = (Enemy) s;
+                e.update();
+            
+                if (!e.isDead()) {
+                aliveCount++;
+                }
         }
+    }
 
+    if (aliveCount == 0) {
         if (c.collidesWithPlayer()) {
             window.endLevel();
         }
     }
+}
+
     public int getOffsetY() {
     return offsetY;
     }

@@ -167,6 +167,8 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
+            tileMap.spawnEnemies();
+
             imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);
             gameThread.start();
@@ -219,6 +221,9 @@ public class GameWindow extends JFrame implements
         }
         if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_W) {
             player.setKey(3, false);
+        }
+        if (keyCode == KeyEvent.VK_F) { // Press F to attack
+            player.attack();
         }
     }
 
