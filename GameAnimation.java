@@ -28,9 +28,6 @@ public class GameAnimation {
 		dx = 0;		// increment to move along x-axis
 		dy = 0;	// increment to move along y-axis
 
-		width = 64;
-		height = 64;
-
 		// load images from strip file
 
 		this.name = file.substring(2);
@@ -72,7 +69,9 @@ public class GameAnimation {
 	}
 
 
-	public void draw(Graphics2D g2, int xPos, int yPos) {
+	public void draw(Graphics2D g2, int xPos, int yPos, int width, int height) {
+		this.width = width;
+		this.height = height;
 		if (!animation.isStillActive())
 			return;
 

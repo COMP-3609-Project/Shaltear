@@ -12,6 +12,8 @@ public class Player {
 
    private static final int TILE_SIZE = 64;
 
+   private static int LEVEL = 0;
+
    private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
@@ -55,13 +57,29 @@ public class Player {
       inAir = false;
    
       animation = AnimationManager.loadAnimation("PlayerIdle");
+
+      LEVEL++;
+      if(LEVEL==1 || LEVEL == 3){
+         x = 300;
+         y = 736;
+      }
+      else if(LEVEL == 2){
+         x = 300;
+         y = 736;
+      }
+
+   }
+   
+   // Get current level (before increment)
+   public static int getLevel() {
+      return LEVEL;
    }
 
 
    public Point collidesWithTile(int newX, int newY) {
 
-     int playerWidth = animation.getWidth();
-     int offsetY = tileMap.getOffsetY();
+      	  int playerWidth = animation.getWidth();
+      	  int offsetY = tileMap.getOffsetY();
 	  int xTile = tileMap.pixelsToTiles(newX);
 	  int yTile = tileMap.pixelsToTiles(newY - offsetY);
 
@@ -144,7 +162,7 @@ public class Player {
 
    }
 
-   // 1. Handle Jumping 
+   // 1. Handle Jumping (Upward trigger)
    if (jumpKey && !jumping && !inAir) {
       // animation = playerJump;
       jump();
@@ -241,30 +259,100 @@ public class Player {
       startY = y;
       initialVelocity = 70;
    }
-public void attack() {
-    // 1. Prevent "spamming" the attack 
-    if (isAttacking) return;
 
-    
-    isAttacking = true;
-    attackTimer = 15; 
 
-    if (animation.getName().contains("Flip")) {
-        animation = AnimationManager.loadAnimation("PlayerAttackFlip");
-    } else {
-        animation = AnimationManager.loadAnimation("PlayerAttack");
+   public void update() {
+      int distance = 0;
+      int newY = 0;
+
+      timeElapsed++;
+
+      if (invincibleTimer > 0) {
+        invincibleTimer--;
     }
 
-    int range = 2; 
-    Rectangle2D.Double attackHitbox;
+      if (jumping || inAir) {
+         distance = (int) (initialVelocity * timeElapsed - 4.9 * timeElapsed * timeElapsed);
+         newY = startY - distance;
 
-    if (animation.getName().contains("Flip")) {
-        // Facing Left: Hitbox starts 'range' pixels to the left of the player's X
-        attackHitbox = new Rectangle2D.Double(x - range, y, range, animation.getHeight());
-    } else {
-        // Facing Right: Hitbox starts at the player's right edge (x + width)
-        attackHitbox = new Rectangle2D.Double(x + animation.getWidth(), y, range, animation.getHeight());
-    }
+         if (newY > y && goingUp) {
+            goingUp = false;
+            goingDown = true;
+         }
+
+         if (goingUp) {
+            Point tilePos = collidesWithTileUp (x, newY);	
+            if (tilePos != null) {				// hits a tile going up
+               System.out.println ("Jumping: Collision Going Up!");
+
+               int offsetY = tileMap.getOffsetY();
+               int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+               int bottomTileY = topTileY + TILE_SIZE;
+               y = bottomTileY;
+               fall();
+         }
+            else {
+            y = newY;
+            System.out.println ("Jumping: No collision.");
+            }
+               }
+         else if (goingDown) {			
+            Point tilePos = collidesWithTileDown (x, newY);	
+            if (tilePos != null) {				// hits a tile going up
+               System.out.println ("Jumping: Collision Going Down!");
+               int playerHeight = animation.getHeight();
+               goingDown = false;
+
+               int offsetY = tileMap.getOffsetY();
+               int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
+
+               y = topTileY - playerHeight;
+               jumping = false;
+               inAir = false;
+            }
+            else {
+               y = newY;
+               System.out.println ("Jumping: No collision.");
+            }
+         }
+      }
+
+      if (isAttacking) {
+        attackTimer--;
+        if (attackTimer <= 0) {
+            isAttacking = false;
+            // Return to idle based on direction
+            animation = animation.getName().contains("Flip") ? 
+                        AnimationManager.loadAnimation("PlayerIdleFlip") : 
+                        AnimationManager.loadAnimation("PlayerIdle");
+        }
+      }
+   }
+
+   public void attack() {
+      // 1. Prevent "spamming" the attack 
+      if (isAttacking) return;
+
+      
+      isAttacking = true;
+      attackTimer = 15; 
+
+      if (animation.getName().contains("Flip")) {
+         animation = AnimationManager.loadAnimation("PlayerAttackFlip");
+      } else {
+         animation = AnimationManager.loadAnimation("PlayerAttack");
+      }
+
+      int range = 40; 
+      Rectangle2D.Double attackHitbox;
+
+      if (animation.getName().contains("Flip")) {
+         // Facing Left: Hitbox starts 'range' pixels to the left of the player's X
+         attackHitbox = new Rectangle2D.Double(x - range, y, range, animation.getHeight());
+      } else {
+         // Facing Right: Hitbox starts at the player's right edge (x + width)
+         attackHitbox = new Rectangle2D.Double(x + animation.getWidth(), y, range, animation.getHeight());
+      }
 
     LinkedList allSprites = tileMap.getSprites();
     
@@ -286,76 +374,8 @@ public void attack() {
       }
       lives--;
       invincibleTimer = INVINCIBILITY_DURATION;
-      System.out.println("Ouch! Lives remaining: " + lives);
+      System.out.println("Lives remaining: " + lives);
 }
-
-
-
-   public void update () {
-      int distance = 0;
-      int newY = 0;
-
-      if (this.invincibleTimer > 0) {
-            this.invincibleTimer--;
-        }
-
-      timeElapsed++;
-
-      if (jumping || inAir) {
-	   distance = (int) (initialVelocity * timeElapsed - 
-                             4.9 * timeElapsed * timeElapsed);
-	   newY = startY - distance;
-
-	   if (newY > y && goingUp) {
-		goingUp = false;
- 	  	goingDown = true;
-	   }
-
-	   if (goingUp) {
-		Point tilePos = collidesWithTileUp (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-
-      	  		int offsetY = tileMap.getOffsetY();
-			int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
-			int bottomTileY = topTileY + TILE_SIZE;
-
-		   	y = bottomTileY;
-		   	fall();
-		}
-	   	else {
-			y = newY;
-	   	}
-            }
-	    else
-	    if (goingDown) {			
-		Point tilePos = collidesWithTileDown (x, newY);	
-	   	if (tilePos != null) {				// hits a tile going up
-	  	    int playerHeight = animation.getHeight();
-		    goingDown = false;
-
-      	            int offsetY = tileMap.getOffsetY();
-		    int topTileY = ((int) tilePos.getY()) * TILE_SIZE + offsetY;
-
-	            y = topTileY - playerHeight;
-	  	    jumping = false;
-		    inAir = false;
-	       }
-	       else {
-		    y = newY;
-	       }
-	   }
-      }
-      if (isAttacking) {
-        attackTimer--;
-        if (attackTimer <= 0) {
-            isAttacking = false;
-            // Return to idle based on direction
-            animation = animation.getName().contains("Flip") ? 
-                        AnimationManager.loadAnimation("PlayerIdleFlip") : 
-                        AnimationManager.loadAnimation("PlayerIdle");
-        }
-    }
-   }
 
    public void setKey(int direction, boolean isPressed) {
     if (direction == 1) leftKey = isPressed;
@@ -404,5 +424,109 @@ public void attack() {
    public Rectangle2D.Double getBoundingRectangle() {
          return new Rectangle2D.Double (x, y, animation.getWidth(), animation.getHeight());
    }
+
+/*
+
+   public Point collidesWithTile(int newX, int newY) {
+
+	 int playerWidth = playerImage.getWidth(null);
+	 int playerHeight = playerImage.getHeight(null);
+
+      	 int fromX = Math.min (x, newX);
+	 int fromY = Math.min (y, newY);
+	 int toX = Math.max (x, newX);
+	 int toY = Math.max (y, newY);
+
+	 int fromTileX = tileMap.pixelsToTiles (fromX);
+	 int fromTileY = tileMap.pixelsToTiles (fromY);
+	 int toTileX = tileMap.pixelsToTiles (toX + playerWidth - 1);
+	 int toTileY = tileMap.pixelsToTiles (toY + playerHeight - 1);
+
+	 for (int x=fromTileX; x<=toTileX; x++) {
+		for (int y=fromTileY; y<=toTileY; y++) {
+			if (tileMap.getTile(x, y) != null) {
+				Point tilePos = new Point (x, y);
+				return tilePos;
+			}
+		}
+	 }
+	
+	 return null;
+   }
+*/
+
+
+   /*public synchronized void move (int direction) {
+
+      int newX = x;
+      Point tilePos = null;
+
+      if (!window.isVisible ()) return;
+      
+      if (direction == 1) {		// move left
+	  playerImage = playerLeftImage;
+          newX = x - DX;
+	  if (newX < 0) {
+		x = 0;
+		return;
+	  }
+		
+	  tilePos = collidesWithTile(newX, y);
+      }	
+      else				
+      if (direction == 2) {		// move right
+	  playerImage = playerRightImage;
+      	  int playerWidth = playerImage.getWidth(null);
+          newX = x + DX;
+
+      	  int tileMapWidth = tileMap.getWidthPixels();
+
+	  if (newX + playerImage.getWidth(null) >= tileMapWidth) {
+	      x = tileMapWidth - playerImage.getWidth(null);
+	      return;
+	  }
+
+	  tilePos = collidesWithTile(newX+playerWidth, y);			
+      }
+      else				// jump
+      if (direction == 3 && !jumping) {	
+          jump();
+	  return;
+      }
+    
+      if (tilePos != null) {  
+         if (direction == 1) {
+	     System.out.println (": Collision going left");
+             x = ((int) tilePos.getX() + 1) * TILE_SIZE;	   // keep flush with right side of tile
+	 }
+         else
+         if (direction == 2) {
+	     System.out.println (": Collision going right");
+      	     int playerWidth = playerImage.getWidth(null);
+             x = ((int) tilePos.getX()) * TILE_SIZE - playerWidth; // keep flush with left side of tile
+	 }
+      }
+      else {
+          if (direction == 1) {
+	      x = newX;
+	      bgManager.moveLeft();
+          }
+	  else
+	  if (direction == 2) {
+	      x = newX;
+	      bgManager.moveRight();
+   	  }
+
+          if (isInAir()) {
+	      System.out.println("In the air. Starting to fall.");
+	      if (direction == 1) {				// make adjustment for falling on left side of tile
+      	          int playerWidth = playerImage.getWidth(null);
+		  x = x - playerWidth + DX;
+	      }
+	      fall();
+          }
+      }
+   }
+	  */
 
 }

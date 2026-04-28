@@ -35,8 +35,13 @@ public class Collectible {
 		dimension = panel.getSize();
 		Random random = new Random();
 		//x = 300;	
-		x = 600;
-		y = 600;
+		x = 700;
+
+		if (Player.getLevel() == 2) {
+			y = 700;
+		} else {
+			y = 700;
+		}
 
 		this.player = player;
 

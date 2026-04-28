@@ -3,7 +3,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 public class TileMap {
@@ -105,14 +104,7 @@ public class TileMap {
             if (anim != null) {
                 anim.draw(g2, e.getX() + tileOffsetX, e.getY(), TILE_SIZE, TILE_SIZE);
             }
-            Rectangle2D.Double hitbox = e.getBoundingRectangle();
-            g2.setColor(Color.RED); 
-            g2.drawRect(
-                (int)hitbox.x + tileOffsetX, 
-                (int)hitbox.y,            
-                (int)hitbox.width, 
-                (int)hitbox.height
-            );
+           
         } /*else{
                 g2.setColor(Color.RED);
                 g2.fillRect(e.getX() + tileOffsetX, e.getY(), 64, 64);
@@ -126,25 +118,28 @@ public class TileMap {
 
     }
 
-    public void spawnEnemies() {
-    for (int i = 0; i < 6; i++) {
-        Enemy enemy = new Enemy(window, player, this, bgManager);
-       
-        int startX = 192 + (i * 500); 
-        int startY = 950; 
-        
-       
-        Point p0 = new Point(startX, startY);
-        Point p1 = new Point(startX + 100, startY);
-        Point p2 = new Point(startX + 200, startY);
-        
-        enemy.setMovementPoints(p0, p1, p2); 
-        enemy.activate();
-        
-        sprites.add(enemy);
-    }
+    public void addEnemy(int x, int y, int patrolWidth) {
+    Enemy enemy = new Enemy(window, player, this, bgManager);
+    
+    Point p0 = new Point(x, y);
+    Point p1 = new Point(x + (patrolWidth / 2), y);
+    Point p2 = new Point(x + patrolWidth, y);
+    
+    enemy.setMovementPoints(p0, p1, p2);
+    enemy.activate();
+    sprites.add(enemy);
 }
 
+
+    public void spawnEnemies() {
+    addEnemy(200, 950, 100);  
+    addEnemy(800, 950, 200);  
+    addEnemy(1500, 700, 300);
+    addEnemy(1300, 950, 500);
+    addEnemy(2100, 950, 450);
+    addEnemy(2300, 700, 350);
+    addEnemy(2800, 950, 400);
+    }
 
     public LinkedList getSprites() {
         return sprites;
