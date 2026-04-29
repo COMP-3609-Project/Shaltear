@@ -144,7 +144,7 @@ public class TileMapManager {
         tiles = new ArrayList<>();
         char ch = 'A';
         while (true) {
-            String filename = "images/tilemaps/TileMap1/tile_" + ch + ".png";
+            String filename = "images/tilemaps/tile_" + ch + ".png";
             file = new File(filename);
             if (!file.exists()) {
                 System.out.println("Image file could not be opened: " + filename);
