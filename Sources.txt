@@ -1,4 +1,7 @@
 Background1 - https://edermunizz.itch.io/free-pixel-art-forest
-Background2 - https://ansimuz.itch.io/gothicvania-cold-corridors
-TileMap1 - https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
-TileMap2 - https://ansimuz.itch.io/gothicvania-cold-corridors
+Background2 - https://www.pinterest.com/pin/67202219434794757/
+Background3 - https://ansimuz.itch.io/sunnyland-fort-of-illusion
+BackgroundSound1 - https://pixabay.com/sound-effects/musical-be-more-serious-loop-275528/
+BackgroundSound2 - https://pixabay.com/sound-effects/musical-looping-techno-beat-29923/
+BackgroundSound3 - https://pixabay.com/sound-effects/musical-grudge-revised-409696/
+TileMap - https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art

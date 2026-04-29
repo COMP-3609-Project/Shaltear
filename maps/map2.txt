@@ -10,16 +10,16 @@
 #   2       Bad Guy 2 (fly)
 
 
-D            I           C
-D           I            C
-D          I             C
-D         I              C
-D        I              C
-D                      C
-D                       C
-D              IIIIII         C
-D       IIIIII                   C
-D   IIII                    C
-DI                      C
+D            I          
+D           I           
+D          I            
+D         I             
+D        I              
+D                      
+D                      
+D              IIIIII   
+D       IIIIII          
+D   IIII                
+DI                      
 D                      C
 HBBBBBBBBBBBBBBBBBBBBBBG

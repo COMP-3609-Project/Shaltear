@@ -114,6 +114,8 @@ public class GameWindow extends JFrame implements
 
             try {
                 String filename = "maps/map" + level + ".txt";
+                SoundManager.getInstance().stopSound("background" + (level - 1));
+                SoundManager.getInstance().playSound("background" + level, true);
                 tileMap = tileManager.loadMap(filename) ;
                 
                 // Re-initialize player for new level if needed
@@ -168,6 +170,7 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
+                SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
             } catch (IOException e) {
@@ -175,7 +178,7 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
-            tileMap.spawnEnemies();
+            // tileMap.spawnEnemies();
 
             imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);

@@ -1,8 +1,7 @@
-import javax.sound.sampled.AudioInputStream;		// for playing sound clips
-import javax.sound.sampled.*;
+// for playing sound clips
 import java.io.*;
-
-import java.util.HashMap;				// for storing sound clips
+import java.util.HashMap;
+import javax.sound.sampled.*;				// for storing sound clips
 
 
 public class SoundManager {				// a Singleton class
@@ -17,19 +16,14 @@ public class SoundManager {				// a Singleton class
 	private SoundManager () {
 		clips = new HashMap<String, Clip>();
 
-		Clip clip = loadClip("sounds/background.wav");
-		clips.put("background", clip);		// background theme sound
+		Clip clip = loadClip("sounds/BackgroundSound1.wav");
+		clips.put("background1", clip);
 
-		clip = loadClip("sounds/hitSound.wav");
-		clips.put("hit", clip);			// played when player's sprite collides 
-							//   with another sprice
+		clip = loadClip("sounds/BackgroundSound2.wav");
+		clips.put("background2", clip);	
 
-		clip = loadClip("sounds/appearSound.wav");
-		clips.put("appear", clip);		// played when a special sprite 
-							//   makes an appearance
-
-		clip = loadClip("sounds/BirdSound.wav");
-		clips.put("birdSound", clip);		// played for bird-flying animation
+		clip = loadClip("sounds/BackgroundSound3.wav");
+		clips.put("background3", clip);	
 	}
 
 

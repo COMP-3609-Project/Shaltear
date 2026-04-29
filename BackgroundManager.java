@@ -33,7 +33,7 @@ public class BackgroundManager {
 		this.window = window;
 		backgrounds = new ArrayList<>();
 
-		for(int i=1;i<=2;i++){
+		for(int i=1;i<=3;i++){
 			File folder = new File(pathName + i);
 			File[] files = folder.listFiles();
 			Arrays.sort(files, Collections.reverseOrder());

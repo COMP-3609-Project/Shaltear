@@ -72,7 +72,7 @@ public class TileMap {
         g2.fillRect(0, 0, screenWidth, screenHeight);
         
         
-        bgManager.draw(g2, 1);
+        bgManager.draw(g2, Player.getLevel());
 
         
         int firstTileX = pixelsToTiles(-tileOffsetX);
