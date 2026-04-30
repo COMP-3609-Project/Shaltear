@@ -326,7 +326,6 @@ public class Player {
    }
 
    public void attack() {
-      // 1. Prevent "spamming" the attack 
       if (isAttacking) return;
 
       
