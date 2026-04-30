@@ -82,6 +82,9 @@ public class TileMapManager {
                     case '*' -> {
                         newMap.addCollectibleAt(x, y);
                     }
+                    case '&' -> {
+                        newMap.addBossAt(x, y);
+                    }
                     default -> {
                         // check if the char represents tile A, B, C etc.
                         int tile = ch - 'A';
