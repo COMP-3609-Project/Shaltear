@@ -71,8 +71,9 @@ public class TileMap {
         g2.setColor(Color.black);
         g2.fillRect(0, 0, screenWidth, screenHeight);
         
-        
-        bgManager.draw(g2, Player.getLevel());
+        if(window.getLevel()<=3){
+            bgManager.draw(g2, window.getLevel());
+        }
 
         
         int firstTileX = pixelsToTiles(-tileOffsetX);
