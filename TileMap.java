@@ -183,7 +183,7 @@ public class TileMap {
        }else if(window.getLevel()==2){
             g2.setColor(Color.RED);
             g2.setFont(new Font("Arial", Font.BOLD, 30));
-            g2.drawString("Bats Collected: " + collected, 50, 50);
+            g2.drawString("Bats Collected: " + collected + "/15", 50, 50);
             Collectible collectible = getCurrentCollectible();
             if (collectible != null) {
                 collectible.getAnimation().draw(g2, Math.round(collectible.getX()) + tileOffsetX, Math.round(collectible.getY()), 48, 48);
@@ -261,8 +261,23 @@ public class TileMap {
         }
     }
 }
+    public boolean isBossDefeated() {
+    if (bosslist == null || bosslist.isEmpty()) return false;
+    
+    for (Boss b : bosslist) {
+      
+        if (!b.isDead()) {
+            return false;
+        }
+    }
+    return true;
+    }
 
     public int getOffsetY() {
     return offsetY;
+    }
+
+    public LinkedList<Boss> getBossList() {
+        return bosslist;
     }
 }

@@ -22,6 +22,9 @@ public class Boss {
 	private static final int SHOOT_DELAY = 20;
 
 	private boolean isDead = false;
+   private boolean isDying = false;
+   private int deathTimer = 0;
+   private static final int DEATH_DURATION = 7;
    private GameAnimation projectileAnimation;
 
     public Boss (JFrame w, Player p, TileMap t, BackgroundManager b) {
@@ -44,9 +47,18 @@ public class Boss {
 
 
 	public void update() {
+
 		if(isDead) {
 			return;
 		}
+
+      if (isDying) {
+        deathTimer++;
+        if (deathTimer >= DEATH_DURATION) {
+            isDead = true; 
+        }
+        return; 
+    }
 		circularMotion.update();
 		this.x = circularMotion.getX();
 		this.y = circularMotion.getY();
@@ -60,7 +72,12 @@ public class Boss {
 
 	}
 	public void takeDamage() {
-      health--;
+       if (isDying || isDead) return; 
+          health--;
+
+       if (health <= 0) {
+        startDeathSequence();
+     }
    }
    
    public Rectangle2D.Double getBoundingRectangle() {
@@ -93,6 +110,7 @@ public class Boss {
              i--;
          }
      }
+
    }
 	public int getHealth() { 
       return health;
@@ -118,9 +136,17 @@ public class Boss {
    public boolean isDead() {
 	  return isDead;
    }
+   private void startDeathSequence() {
+    isDying = true;
+    this.animation = AnimationManager.loadAnimation("BossDeath"); 
+    this.soundManager.playSound("boss_death", false);
+}
    public void die() {
 	  isDead = true;
+     animation = AnimationManager.loadAnimation("BossDeath");
    }
    public Player getPlayer(){return this.player;}
-   public void setPlayer(Player p){this.player = p;}
+   public void setPlayer(Player p){
+      this.player = p;
+   }
 }

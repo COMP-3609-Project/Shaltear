@@ -31,6 +31,7 @@ public class Player {
    private int timeElapsed;
    private int startY;
 
+
    private boolean goingUp;
    private boolean goingDown;
 
@@ -43,7 +44,10 @@ public class Player {
    private boolean isAttacking = false;
    private int attackTimer = 0;
    private int invincibleTimer = 0;
-   private static final int INVINCIBILITY_DURATION = 180;
+   private static final int INVINCIBILITY_DURATION = 45;
+
+   private int fireCooldown = 0;          // The current timer
+   private static final int FIRE_RATE = 15;
 
    private ArrayList<ProjectileMotion> playerProjectiles;  // Multiple player projectiles
 
@@ -210,11 +214,11 @@ public class Player {
 
       if (!jumping && !inAir) {   
 	  playerHeight = animation.getHeight();
-	  tilePos = collidesWithTile(x, y + playerHeight + 1); 	// check below player to see if there is a tile
+	  tilePos = collidesWithTile(x, y + playerHeight + 1); 	
 	
-  	  if (tilePos == null)				   	// there is no tile below player, so player is in the air
+  	  if (tilePos == null)				   	
 		return true;
-	  else							// there is a tile below player, so the player is on a tile
+	  else							
 		return false;
       }
 
@@ -252,9 +256,12 @@ public class Player {
 
    public void projecTileActivate(){
       // Create a new projectile and add it to the list
+      if(fireCooldown <=0){
       ProjectileMotion proj = new ProjectileMotion(window, this, tileMap);
       proj.activate();
       playerProjectiles.add(proj);
+      fireCooldown = FIRE_RATE;
+      }
    }
 
    public void updateProjectiles() {
@@ -302,7 +309,10 @@ public class Player {
 
       if (invincibleTimer > 0) {
         invincibleTimer--;
-    }
+      }
+      if (fireCooldown > 0) {
+        fireCooldown--;
+      }
 
       if (jumping || inAir) {
          distance = (int) (initialVelocity * timeElapsed - 4.9 * timeElapsed * timeElapsed);

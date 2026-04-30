@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
 import javax.swing.*;    
@@ -41,7 +40,7 @@ public class GameWindow extends JFrame implements
 	private AnimationManager animManager;
 
     public GameWindow() {
-        super("Tiled Bat and Ball Game: Full Screen Exclusive Mode");
+        super("Shaltear");
 
         initFullScreen();
         setButtonAreas();
@@ -76,7 +75,9 @@ public class GameWindow extends JFrame implements
         if (tileMap != null) {
             tileMap.update();
         }
-
+        if (tileMap.isBossDefeated()) {
+            gameOver = true;
+        }
         if (player != null && !isPaused) {
             player.handleMovement(); 
             player.update();         
@@ -87,7 +88,7 @@ public class GameWindow extends JFrame implements
         
         if (player.getLives() <= 0) {
             gameOver = true;
-            isRunning = false; 
+            //isRunning = false; 
         }
 
         if (levelChange) {
@@ -129,10 +130,29 @@ public class GameWindow extends JFrame implements
         }
         
 		if (gameOver) {
-			Color darken = new Color (0, 0, 0, 125);
-			g2.setColor (darken);
-			g2.fill (new Rectangle2D.Double (0, 0, this.getWidth()/4, this.getHeight()/4));
-            g2.drawString("GAME OVER", getWidth()/4, getHeight()/4);
+		
+        Color darken = new Color(0, 0, 0, 180); 
+        g2.setColor(darken);
+    
+        g2.fillRect(0, 0, pWidth, pHeight); 
+
+    
+        g2.setFont(new Font("SansSerif", Font.BOLD, 72));
+        g2.setColor(Color.WHITE);
+    
+    
+        String msg = (player != null && player.getLives() <= 0) ? "GAME OVER" : "VICTORY!";
+        FontMetrics metrics = g2.getFontMetrics();
+        int x = (pWidth - metrics.stringWidth(msg)) / 2;
+        int y = (pHeight / 2) + (metrics.getAscent() / 2);
+    
+        g2.drawString(msg, x, y);
+
+    
+        g2.setFont(new Font("Monospaced", Font.PLAIN, 24));
+        String subMsg = "Press ESC to Quit";
+        int subX = (pWidth - g2.getFontMetrics().stringWidth(subMsg)) / 2;
+        g2.drawString(subMsg, subX, y + 60);
 		}
 
         drawButtons(g2);
@@ -146,8 +166,8 @@ public class GameWindow extends JFrame implements
             tileManager = new TileMapManager (this);
 
             try {
-                tileMap = tileManager.loadMap("maps/map3.txt");
-                level = 3;
+                tileMap = tileManager.loadMap("maps/map1.txt");
+                level = 1;
                 SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);

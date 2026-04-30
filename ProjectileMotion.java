@@ -5,186 +5,140 @@ import javax.swing.JFrame;
 
 public class ProjectileMotion {
 
-   	private static final int XSIZE = 64;
-   	private static final int YSIZE = 64;
+    private static final int XSIZE = 64;
+    private static final int YSIZE = 64;
 
-   	private JFrame window;
-	private Player player;
-	private Boss boss;
-   	private int x = 0;
-   	private int y = 200;
-   	private int dx = 2;
-   	private int dy = 2;
-	private int xPos, yPos;			// location from which to generate projectile
-   	private int initialVelocityX = 25;
-   	private int initialVelocityY = 25;
-	private int direction;
+    private JFrame window;
+    private Player player;
+    private Boss boss;
+    private int x = 0;
+    private int y = 200;
+    private int xPos, yPos;
+    private int initialVelocityX = 25;
+    private int initialVelocityY = 45;
+    private int direction; // 1 for Left, 2 for Right
 
-   	private Dimension dimension;
+    private Dimension dimension;
+    double timeElapsed;
+    boolean active;
 
-   	double timeElapsed;
-	boolean active;
+    private TileMap tileMap;
+    private GameAnimation animation;
 
-	// New fields for unified projectile system
-	private int projectileSpeed;       // horizontal speed
-	private TileMap tileMap;            // reference to tileMap for enemy collision
-	private GameAnimation animation;
+    public ProjectileMotion(JFrame w) {
+        window = w;
+        active = false;
+        timeElapsed = 0;
+        dimension = window.getSize();
+        animation = AnimationManager.loadAnimation("Fireball");
+    }
 
-	public ProjectileMotion (JFrame w) {
-      	window = w;
-		active = false;
-		timeElapsed = 0;
-      	dimension = window.getSize();
-		xPos = 25;
-		yPos = 200 - YSIZE;
-		animation = AnimationManager.loadAnimation("Fireball");
-	}
+    
+    public ProjectileMotion(JFrame w, Player p, TileMap tileMap) {
+        this(w);
+        this.player = p;
+        this.tileMap = tileMap;
+    }
 
-	public ProjectileMotion(JFrame w, Player p, TileMap tileMap) {
-		this(w);
-		this.tileMap = tileMap;
-		this.projectileSpeed = 15;
-		this.player = p;
-	}
+   
+    public ProjectileMotion(JFrame w, Boss b, int speed) {
+        this(w);
+        this.boss = b;
+        this.initialVelocityX = Math.abs(speed); 
+    }
 
-	public ProjectileMotion(JFrame w, Boss b, int speed) {
-		this(w);
-		this.projectileSpeed = speed;
-		this.boss = b;
-	}
+    public void activate() {
+        if (player != null) {
+            xPos = player.getX();
+            yPos = player.getY() + player.getHeight() / 2;
+            direction = player.getDirection();
+        } else if (boss != null) {
+            xPos = boss.getX();
+            
+            yPos = boss.getY() + 96; 
+            direction = 1; // Boss shoots Left
+        }
+        active = true;
+        timeElapsed = 0;
+        x = 0;
+        y = yPos;
+    }
 
+    public void update() {
+    if (!active || window == null) return;
 
-	public boolean isActive() {
-		return active;
-	}
+    timeElapsed += 0.5; 
+    x = (int) (initialVelocityX * timeElapsed);
 
-	public void activate() {
-		if(player!=null) {
-			xPos = player.getX();
-			yPos = player.getY() + player.getHeight() / 2;
-			if(player.getDirection() == 2) {
-				direction = 2;
-			}else{
-				direction = 1;
-			}
-		} else {
-			xPos = boss.getX();
-			yPos = boss.getY() + boss.getAnimation().getHeight() / 2;
-			direction = 1;
-		}
-		active = true;
-		timeElapsed = 0;
-	}
+    if (boss != null) {
+        // BOSS FIREBALL LOGIC 
+        y = (int) (yPos + (0.25 * timeElapsed * timeElapsed));
 
-	public void deActivate() {
-		active = false;
-	}
+        if (boss.getPlayer() != null) {
+            if (getBoundingRectangle().intersects(boss.getPlayer().getBoundingRectangle())) {
+                boss.getPlayer().takeDamage();
+                active = false;
+            }
+        }
+    } else if (player != null) {
+        // PLAYER FIREBALL LOGIC 
+        int arcY = (int) (initialVelocityY * timeElapsed - 1 * timeElapsed * timeElapsed);
+        y = yPos - arcY;
 
+        if (tileMap != null) {
+            
+            if (tileMap.getBossList() != null) {
+                for (Boss b : tileMap.getBossList()) {
+                    if (!b.isDead() && getBoundingRectangle().intersects(b.getBoundingRectangle())) {
+                        b.takeDamage();
+                        active = false;
+                        return; 
+                    }
+                }
+            }
 
-   	public void update () {  
+            if (tileMap.getSprites() != null) {
+                for (Object s : tileMap.getSprites()) {
+                    if (s instanceof Enemy e && e.isActive()) {
+                        if (getBoundingRectangle().intersects(e.getBoundingRectangle())) {
+                            e.die();
+                            active = false;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-		if (!window.isVisible () || !active) return;
+    // Screen Boundary Deactivation
+    if (x > 3000 || x < -3000 || y > 2000) active = false;
+}
 
-		if (boss!=null) {
-			timeElapsed = timeElapsed + 0.5;
+    public Rectangle2D getBoundingRectangle() {
+        int drawX;
+        if (boss != null || direction == 1) {
+            drawX = xPos - x;
+        } else {
+            drawX = xPos + x;
+        }
+        return new Rectangle2D.Double(drawX, y, XSIZE, YSIZE);
+    }
 
-			x = (int) (initialVelocityX * timeElapsed);
-			y = (int) (initialVelocityX * timeElapsed);
-			// y = (int) (initialVelocityY * timeElapsed - 1 * timeElapsed * timeElapsed);
-			if (getBoundingRect().intersects(boss.getPlayer().getBoundingRectangle())) {
-				boss.getPlayer().takeDamage();
-				active = false;
-				return;
-			}
+    public void draw(Graphics2D g2, int tileOffsetX) {
+        if (!active || animation == null) return;
 
-			if (xPos < -XSIZE || xPos > dimension.width + XSIZE) {
-				active = false;
-			}
-		} else {
-		 
-			timeElapsed = timeElapsed + 0.5;
+        Rectangle2D rect = getBoundingRectangle();
+        
+        
+        animation.draw(g2, (int)rect.getX() + tileOffsetX, (int)rect.getY(), XSIZE, YSIZE);
 
-			x = (int) (initialVelocityX * timeElapsed);
-			y = (int) (initialVelocityY * timeElapsed - 1 * timeElapsed * timeElapsed);
+        //Debug Hitbox
+        g2.setColor(java.awt.Color.RED);
+        g2.drawRect((int)rect.getX() + tileOffsetX, (int)rect.getY(), XSIZE, YSIZE);
+    }
 
-			if (y > 0)
-				y = yPos - y;			// yPos is the height at which ball is thrown
-			else
-				y = yPos + y * -1;
-
-			// Calculate actual position
-			int drawX;
-			if (player.getDirection() == 2) {
-				drawX = xPos + x;
-			} else {
-				drawX = xPos - x;
-			}
-
-			// Check collision with enemies
-			if (tileMap != null) {
-				java.util.LinkedList allSprites = tileMap.getSprites();
-				for (Object s : allSprites) {
-					if (s instanceof Enemy e) {
-						Rectangle2D projRect = new Rectangle2D.Double(drawX, y, XSIZE, YSIZE);
-						if (e.isActive() && projRect.intersects(e.getBoundingRectangle())) {
-							e.die();
-							active = false;
-							return;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	// Get bounding rectangle for collision detection
-	public Rectangle2D getBoundingRectangle() {
-		int drawX;
-		if (player.getDirection() == 2) {
-			drawX = xPos + x;
-		} else {
-			drawX = xPos - x;
-		}
-		return new Rectangle2D.Double(drawX, y, XSIZE, YSIZE);
-	}
-	
-	// Get simple bounding rect for boss projectile
-	public Rectangle2D getBoundingRect() {
-		return new Rectangle2D.Double(xPos, yPos, XSIZE, YSIZE);
-	}
-	
-	public int getX() {
-		return xPos;
-	}
-	
-	public int getY() {
-		return yPos;
-	}
-
-	public int getXSIZE(){
-		return XSIZE;
-	}
-
-	public int getYSIZE(){
-		return YSIZE;
-	}
-
-	public GameAnimation getAnimation() {
-		return animation;
-	}
-
-	public void draw(Graphics2D g2, int tileOffsetX) {
-		if (animation != null && active) {
-			if(boss != null) {
-				animation.draw(g2, xPos - x + tileOffsetX, y, XSIZE, YSIZE);
-			}else{
-				if(direction==2){
-					animation.draw(g2, xPos + x + tileOffsetX, y, XSIZE, YSIZE);
-				}else{
-					animation.draw(g2, xPos - x + tileOffsetX, y, XSIZE, YSIZE);
-				}
-			}
-		}
-	}
-
+    public boolean isActive() { return active; }
+    public void deActivate() { active = false; }
+    public Rectangle2D getBoundingRect() { return getBoundingRectangle(); }
 }
