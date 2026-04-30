@@ -2,7 +2,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.*;    
 
@@ -22,11 +21,7 @@ public class GameWindow extends JFrame implements
 
     private boolean levelChange;
     private int level;
-    private boolean gameOver;
-
-    private BufferedImage image;            
-    private Image quit1Image;            
-    private Image quit2Image;            
+    private boolean gameOver;           
 
     private boolean finishedOff = false;        
     private volatile boolean isOverQuitButton = false;
@@ -36,10 +31,6 @@ public class GameWindow extends JFrame implements
     private Rectangle pauseButtonArea;        
     private volatile boolean isPaused = false;
 
-    private volatile boolean isOverStopButton = false;
-    private Rectangle stopButtonArea;        
-    private volatile boolean isStopped = false;
-   
     private GraphicsDevice device;             
     private Graphics gScr;
     private BufferStrategy bufferStrategy;
@@ -53,10 +44,6 @@ public class GameWindow extends JFrame implements
         super("Tiled Bat and Ball Game: Full Screen Exclusive Mode");
 
         initFullScreen();
-
-        quit1Image = ImageManager.loadImage("images/Quit1.png");
-        quit2Image = ImageManager.loadImage("images/Quit2.png");
-
         setButtonAreas();
 
         addKeyListener(this);
@@ -65,7 +52,6 @@ public class GameWindow extends JFrame implements
 
         animManager = new AnimationManager(this);
         soundManager = SoundManager.getInstance();
-        image = new BufferedImage (pWidth, pHeight, BufferedImage.TYPE_INT_RGB);
 
         startGame();
     }
@@ -91,7 +77,6 @@ public class GameWindow extends JFrame implements
             tileMap.update();
         }
 
-        
         if (player != null && !isPaused) {
             player.handleMovement(); 
             player.update();         
@@ -102,7 +87,7 @@ public class GameWindow extends JFrame implements
         
         if (player.getLives() <= 0) {
             gameOver = true;
-            isRunning = false; // Or trigger a specific Game Over screen
+            isRunning = false; 
         }
 
         if (levelChange) {
@@ -115,7 +100,6 @@ public class GameWindow extends JFrame implements
                 SoundManager.getInstance().playSound("background" + level, true);
                 tileMap = tileManager.loadMap(filename) ;
                 
-                // Re-initialize player for new level if needed
                 player = new Player(this, tileMap, new BackgroundManager(this, 8));
                 tileMap.setPlayer(player);
             } catch (IOException e) {
@@ -188,8 +172,6 @@ public class GameWindow extends JFrame implements
 		levelChange = true;
 	}
 
-    // --- INPUT HANDLING ---
-
     @Override
     public void keyPressed (KeyEvent e) {
         if (isPaused || player == null) return;
@@ -214,7 +196,7 @@ public class GameWindow extends JFrame implements
     }
 
     @Override
-    public void keyReleased (KeyEvent e) {
+    public void keyReleased (KeyEvent e) { //Controls
         if (player == null) return;
         
         int keyCode = e.getKeyCode();
@@ -229,7 +211,7 @@ public class GameWindow extends JFrame implements
         if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_W) {
             player.setKey(3, false);
         }
-        if (keyCode == KeyEvent.VK_F) { // Press F to attack
+        if (keyCode == KeyEvent.VK_F) { 
             player.attack();
         }
     }
@@ -239,45 +221,62 @@ public class GameWindow extends JFrame implements
 
    
     private void setButtonAreas() {
-        int leftOffset = (pWidth - (5 * 150) - (4 * 20)) / 2;
-        pauseButtonArea = new Rectangle(leftOffset, 60, 150, 40);
-        leftOffset += 170;
-        stopButtonArea = new Rectangle(leftOffset, 60, 150, 40);
-        leftOffset += 170;
-        quitButtonArea = new Rectangle(leftOffset, 55, 180, 50);
+        int btnW = 160;
+        int btnH = 45;
+        int spacing = 20;
+        
+        int startX = pWidth - (btnW * 3) - (spacing * 3); 
+        int y = 30;
+
+        pauseButtonArea = new Rectangle(startX, y, btnW, btnH);
+        quitButtonArea = new Rectangle(startX + (btnW + spacing) * 2, y, btnW, btnH);
+    
     }
 
-    private void drawButtons (Graphics g) {
-        Font oldFont = g.getFont();
-        g.setFont(new Font ("TimesRoman", Font.ITALIC + Font.BOLD, 18));
-        g.setColor(Color.BLACK);
-        
-        // Draw Pause Button
-        g.drawOval(pauseButtonArea.x, pauseButtonArea.y, pauseButtonArea.width, pauseButtonArea.height);
-        g.setColor(isOverPauseButton && !isStopped ? Color.WHITE : Color.RED);
-        g.drawString(isPaused && !isStopped ? "Paused" : "Pause", pauseButtonArea.x+45, pauseButtonArea.y+25);
+    private void drawButtons (Graphics2D g2) {
+        drawProfessionalButton(g2, pauseButtonArea, isPaused ? "RESUME" : "PAUSE", isOverPauseButton, new Color(52, 70, 129));
+        drawProfessionalButton(g2, quitButtonArea, "QUIT", isOverQuitButton, new Color(192, 57, 43)); 
+}
 
-        // Draw Quit Button
-        if (isOverQuitButton)
-           g.drawImage(quit1Image, quitButtonArea.x, quitButtonArea.y, 180, 50, null);
-        else
-           g.drawImage(quit2Image, quitButtonArea.x, quitButtonArea.y, 180, 50, null);
+private void drawProfessionalButton(Graphics2D g2, Rectangle r, String text, boolean isHovered, Color baseColor) {
 
-        g.setFont(oldFont);
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+    if (isHovered) {
+        g2.setColor(new Color(255, 255, 255, 80));
+        g2.fillRoundRect(r.x - 3, r.y - 3, r.width + 6, r.height + 6, 15, 15);
+        g2.setColor(baseColor.brighter());
+    } else {
+        g2.setColor(baseColor);
+    }
+
+    g2.fillRoundRect(r.x, r.y, r.width, r.height, 15, 15);
+    
+    g2.setColor(Color.WHITE);
+    g2.setStroke(new BasicStroke(2));
+    g2.drawRoundRect(r.x, r.y, r.width, r.height, 15, 15);
+
+    
+    g2.setFont(new Font("SansSerif", Font.BOLD, 18));
+    FontMetrics metrics = g2.getFontMetrics();
+    int tx = r.x + (r.width - metrics.stringWidth(text)) / 2;
+    int ty = r.y + ((r.height - metrics.getHeight()) / 2) + metrics.getAscent();
+    
+    g2.setColor(Color.WHITE);
+    g2.drawString(text, tx, ty);
+
     }
 
     private void testMousePress(int x, int y) {
-        // System.out.println(x + ", " + y);
-        if (isStopped && !isOverQuitButton) return;
-        if (isOverStopButton) { isStopped = true; isPaused = false; }
-        else if (isOverPauseButton) { isPaused = !isPaused; }
+    
+        if (isOverPauseButton) { isPaused = !isPaused; }
         else if (isOverQuitButton) { isRunning = false; }
+    
     }
 
     private void testMouseMove(int x, int y) {
         if (isRunning) {
             isOverPauseButton = pauseButtonArea.contains(x,y);
-            isOverStopButton = stopButtonArea.contains(x,y);
             isOverQuitButton = quitButtonArea.contains(x,y);
         }
     }
