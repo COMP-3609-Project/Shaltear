@@ -162,4 +162,8 @@ public class Enemy {
 	public void deActivate () {
 		bezierCurveMotion.deActivate();
 	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
 }

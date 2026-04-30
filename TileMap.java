@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class TileMap {
 
@@ -14,9 +15,7 @@ public class TileMap {
     private int mapWidth, mapHeight;
     private int offsetY;
 
-    int cCount = 0;
-
-    private LinkedList sprites;
+    private LinkedList<Enemy> sprites;
     private Player player;
     private Collectible c;
 
@@ -25,6 +24,7 @@ public class TileMap {
     private Dimension dimension;
 
     private int aliveCount;
+    private int collected = 0;
 
     private ArrayList<Collectible> collectibles;
 
@@ -45,30 +45,48 @@ public class TileMap {
         bgManager = new BackgroundManager(window, 12);
         
         tiles = new Image[mapWidth][mapHeight];
-        sprites = new LinkedList();
+        sprites = new LinkedList<>();
         collectibles = new ArrayList<>();
         
     }
 
-    public void makeCollectibles(){
-        collectibles.add(new Collectible(window, player, 1054, 116));
-        collectibles.add(new Collectible(window, player, 158, 66));
-        collectibles.add(new Collectible(window, player, 918, 66));
-        collectibles.add(new Collectible(window, player, 1444, 386));
-        collectibles.add(new Collectible(window, player, 1442, 768));
-        collectibles.add(new Collectible(window, player, 151, 639));
-        collectibles.add(new Collectible(window, player, 151, 324));
-        collectibles.add(new Collectible(window, player, 1230, 445));
-        collectibles.add(new Collectible(window, player, 1430, 254));
-        collectibles.add(new Collectible(window, player, 692, 247));
-        collectibles.add(new Collectible(window, player, 757, 90));
-        c = collectibles.get(cCount);
+    // Add enemy at specific tile position with patrol width
+    public void addEnemyAt(int tileX, int tileY, int patrolWidth) {
+        int pixelX = tilesToPixels(tileX);
+        int pixelY = tilesToPixels(tileY) + offsetY;
+        Enemy enemy = new Enemy(window, player, this, bgManager);
+        enemy.setMovementPoints(
+            new Point(pixelX, pixelY),
+            new Point(pixelX + patrolWidth / 2, pixelY),
+            new Point(pixelX + patrolWidth, pixelY)
+        );
+        enemy.activate();
+        sprites.add(enemy);
     }
 
+    public void addCollectibleAt(int tileX, int tileY) {
+        int pixelX = tilesToPixels(tileX);
+        int pixelY = tilesToPixels(tileY) + offsetY;
+        Collectible collectible = new Collectible(window, player, pixelX, pixelY);
+        collectibles.add(collectible);
+    }
+
+    public Collectible getCurrentCollectible() {
+        if (!collectibles.isEmpty()) {
+            return c;
+        }
+        return null;
+    }
  
     public void setPlayer(Player player) {
         this.player = player;
-        makeCollectibles();
+        for(Collectible collectible : collectibles) {
+            collectible.setPlayer(player);
+        }
+        for(Enemy enemy : sprites) {
+            enemy.setPlayer(player);
+        }
+        if(window.getLevel()==2){ c = collectibles.get(new Random().nextInt((14-0) + 1) + 0);}
     }
 
     public void draw(Graphics2D g2) {
@@ -79,11 +97,6 @@ public class TileMap {
         int mapWidthPixels = tilesToPixels(mapWidth);
 
         int tileOffsetX = screenWidth / 2 - Math.round(player.getX()) - TILE_SIZE;
-        int tileOffsetY = screenHeight / 2 - Math.round(player.getY()) - TILE_SIZE;
-
-        tileOffsetY = Math.min(0, tileOffsetY);
-        tileOffsetY = Math.max(tileOffsetY, screenHeight - tilesToPixels(mapHeight));
-        offsetY = tileOffsetY;
         
         tileOffsetX = Math.min(tileOffsetX, 0);
         tileOffsetX = Math.max(tileOffsetX, screenWidth - mapWidthPixels);
@@ -100,7 +113,7 @@ public class TileMap {
         int firstTileX = pixelsToTiles(-tileOffsetX);
         int lastTileX = firstTileX + pixelsToTiles(screenWidth) + 1;
 
-        int firstTileY = pixelsToTiles(-tileOffsetY);
+        int firstTileY = pixelsToTiles(-offsetY);
         int lastTileY = firstTileY + pixelsToTiles(screenHeight) + 1;
         
         for (int y = firstTileY; y <= lastTileY; y++) {
@@ -109,7 +122,7 @@ public class TileMap {
                 if (image != null) {
                     g2.drawImage(image,
                         tilesToPixels(x) + tileOffsetX,
-                        tilesToPixels(y) + tileOffsetY,
+                        tilesToPixels(y) + offsetY,
                         TILE_SIZE,
                         TILE_SIZE,
                         null);
@@ -117,52 +130,28 @@ public class TileMap {
             }
         }
         for (Object s : sprites) {
-            
-        if (s instanceof Enemy) {
-        Enemy e = (Enemy) s;
-        if (e.isActive()) { 
-            GameAnimation anim = e.getAnimation();
-            
-            if (anim != null) {
-                anim.draw(g2, e.getX() + tileOffsetX, e.getY(), TILE_SIZE, TILE_SIZE);
+            if (s instanceof Enemy) {
+            Enemy e = (Enemy) s;
+                if (e.isActive()) { 
+                    GameAnimation anim = e.getAnimation();
+                    
+                    if (anim != null) {
+                        anim.draw(g2, Math.round(e.getX()) + tileOffsetX, Math.round(e.getY()), TILE_SIZE, TILE_SIZE);
+                    }
+                
+                }
             }
-           
-        } /*else{
-                g2.setColor(Color.RED);
-                g2.fillRect(e.getX() + tileOffsetX, e.getY(), 64, 64);
-        } */
-    }
-}
+        }
        g2.setColor(Color.WHITE);
        g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
        if(window.getLevel()==2){
-            c.getAnimation().draw(g2, Math.round(c.getX()) + tileOffsetX, Math.round(c.getY()), TILE_SIZE/2, TILE_SIZE/2);
+            Collectible collectible = getCurrentCollectible();
+            if (collectible != null) {
+                collectible.getAnimation().draw(g2, Math.round(collectible.getX()) + tileOffsetX, Math.round(collectible.getY()), 48, 48);
+            }
        }
        
-    }
-
-    public void addEnemy(int x, int y, int patrolWidth) {
-    Enemy enemy = new Enemy(window, player, this, bgManager);
-    
-    Point p0 = new Point(x, y);
-    Point p1 = new Point(x + (patrolWidth / 2), y);
-    Point p2 = new Point(x + patrolWidth, y);
-    
-    enemy.setMovementPoints(p0, p1, p2);
-    enemy.activate();
-    sprites.add(enemy);
-}
-
-
-    public void spawnEnemies() {
-    addEnemy(200, 950, 100);  
-    addEnemy(800, 950, 200);  
-    addEnemy(1500, 700, 300);
-    addEnemy(1300, 950, 500);
-    addEnemy(2100, 950, 450);
-    addEnemy(2300, 700, 350);
-    addEnemy(2800, 950, 400);
     }
 
     public LinkedList getSprites() {
@@ -209,15 +198,15 @@ public class TileMap {
         }
     }
 
-    if (aliveCount == 0) {
+    if (aliveCount == 0 && window.getLevel() == 1) {
         window.endLevel();
     }
 
-    if(c.collidesWithPlayer()){
+    if(getCurrentCollectible() != null && getCurrentCollectible().collidesWithPlayer()){
         SoundManager.getInstance().playSound("bat", false);
-        cCount++;
-        if(cCount < collectibles.size()){
-            c = collectibles.get(cCount);
+        collected++;
+        if(collected<15){
+            c = collectibles.get(new Random().nextInt((14-0) + 1) + 0);
         } else {
             window.endLevel();
         }

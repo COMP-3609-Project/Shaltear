@@ -122,6 +122,9 @@ public class GameWindow extends JFrame implements
 
     public void gameRender(Graphics gScr) {
         Graphics2D g2 = (Graphics2D) gScr;
+        double scaleX = (double) pWidth / getSize().width;
+        double scaleY = (double) pHeight / getSize().height;
+        g2.scale(scaleX, scaleY);
         
         if (tileMap != null) {
             tileMap.draw(g2);
@@ -150,7 +153,7 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
-                level = 3;
+                // level = 2;
                 SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
@@ -159,8 +162,6 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
-            tileMap.spawnEnemies();
-
             gameThread = new Thread(this);
             gameThread.start();
             animManager.startAnimations();
@@ -168,6 +169,10 @@ public class GameWindow extends JFrame implements
     }
 
     public void endLevel() {
+        if(level==3){
+            gameOver = true;
+            return;
+        }
 		level = level + 1;
 		levelChange = true;
 	}

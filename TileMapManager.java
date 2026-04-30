@@ -74,25 +74,36 @@ public class TileMapManager {
             for (int x=0; x<line.length(); x++) {
                 char ch = line.charAt(x);
 
-                // check if the char represents tile A, B, C etc.
-                int tile = ch - 'A';
-                switch (window.getLevel()) {
-                    case 1 -> {
-                        if (tile >= 0 && tile < tiles1.size()) {
-                            newMap.setTile(x, y, tiles1.get(tile));
-                        }
+                // Check for special symbols first (enemies and collectibles)
+                switch (ch) {
+                    case '!' -> {
+                        newMap.addEnemyAt(x, y, 100);
                     }
-                    case 2 -> {
-                        if (tile >= 0 && tile < tiles2.size()) {
-                            newMap.setTile(x, y, tiles2.get(tile));
-                        }
-                    }
-                    case 3 -> {
-                        if (tile >= 0 && tile < tiles3.size()) {
-                            newMap.setTile(x, y, tiles3.get(tile));
-                        }
+                    case '*' -> {
+                        newMap.addCollectibleAt(x, y);
                     }
                     default -> {
+                        // check if the char represents tile A, B, C etc.
+                        int tile = ch - 'A';
+                        switch (window.getLevel()) {
+                            case 1 -> {
+                                if (tile >= 0 && tile < tiles1.size()) {
+                                    newMap.setTile(x, y, tiles1.get(tile));
+                                }
+                            }
+                            case 2 -> {
+                                if (tile >= 0 && tile < tiles2.size()) {
+                                    newMap.setTile(x, y, tiles2.get(tile));
+                                }
+                            }
+                            case 3 -> {
+                                if (tile >= 0 && tile < tiles3.size()) {
+                                    newMap.setTile(x, y, tiles3.get(tile));
+                                }
+                            }
+                            default -> {
+                            }
+                        }
                     }
                 }
             }

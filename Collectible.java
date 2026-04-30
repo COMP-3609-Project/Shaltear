@@ -80,5 +80,7 @@ public class Collectible {
    	}
 
 	public GameAnimation getAnimation(){return this.animation;}
-
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
 }
