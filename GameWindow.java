@@ -129,7 +129,7 @@ public class GameWindow extends JFrame implements
         if (tileMap != null) {
             tileMap.draw(g2);
         }
-
+        
 		if (gameOver) {
 			Color darken = new Color (0, 0, 0, 125);
 			g2.setColor (darken);
@@ -145,16 +145,16 @@ public class GameWindow extends JFrame implements
     }
 
     private void startGame() {
-        level = 1;
+        level = 3;
         levelChange = false;
 
         if (gameThread == null) {
             tileManager = new TileMapManager (this);
 
             try {
-                tileMap = tileManager.loadMap("maps/map1.txt");
+                tileMap = tileManager.loadMap("maps/map3.txt");
                 // level = 2;
-                SoundManager.getInstance().playSound("background1", true);
+                SoundManager.getInstance().playSound("background3", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
             } catch (IOException e) {

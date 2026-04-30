@@ -16,6 +16,7 @@ public class TileMap {
     private int offsetY;
 
     private LinkedList<Enemy> sprites;
+    private LinkedList<Boss> bosslist;
     private Player player;
     private Collectible c;
 
@@ -46,6 +47,7 @@ public class TileMap {
         
         tiles = new Image[mapWidth][mapHeight];
         sprites = new LinkedList<>();
+        bosslist = new LinkedList<>();
         collectibles = new ArrayList<>();
         
     }
@@ -69,6 +71,15 @@ public class TileMap {
         int pixelY = tilesToPixels(tileY) + offsetY;
         Collectible collectible = new Collectible(window, player, pixelX, pixelY);
         collectibles.add(collectible);
+    }
+
+    public void addBossAt(int tileX, int tileY) {
+        int pixelX = tilesToPixels(tileX);
+        int pixelY = tilesToPixels(tileY) + offsetY;
+        Boss boss = new Boss(window, player, this, bgManager);
+        boss.setX(pixelX);
+        boss.setY(pixelY);
+        bosslist.add(boss);
     }
 
     public Collectible getCurrentCollectible() {
@@ -142,6 +153,20 @@ public class TileMap {
                 }
             }
         }
+
+        for(Boss b : bosslist) {
+            if (b.isDead() == false) { 
+                GameAnimation anim = b.getAnimation();
+                
+                if (anim != null) {
+                    anim.draw(g2, Math.round(b.getX()) + tileOffsetX, Math.round(b.getY()), 192, 192);
+                }
+                for (Projectile p : b.getProjectiles()) {
+                p.draw(g2, tileOffsetX);
+                 }
+            }
+        }
+
        g2.setColor(Color.WHITE);
        g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
@@ -196,6 +221,10 @@ public class TileMap {
                 aliveCount++;
                 }
         }
+    }
+
+    for(Boss b : bosslist) {
+        b.update();
     }
 
     if (aliveCount == 0 && window.getLevel() == 1) {

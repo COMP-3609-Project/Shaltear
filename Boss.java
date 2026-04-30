@@ -3,16 +3,16 @@ import javax.swing.JFrame;
 
 public class Boss {
 
-    private int x, y;
-   	private int width, height;
+   private int x, y;
+   private int width, height;
 	private int health = 10;
 
-   	private Player player;
+   private Player player;
   	private SoundManager soundManager;
-    private GameAnimation animation;
-    private JFrame window;
-    private TileMap tileMap;
-    private BackgroundManager bgManager;
+   private GameAnimation animation;
+   private JFrame window;
+   private TileMap tileMap;
+   private BackgroundManager bgManager;
 
 	private CircularMotion circularMotion;
 	private LinkedList<Projectile> projectiles;
@@ -20,22 +20,26 @@ public class Boss {
 	private static final int SHOOT_DELAY = 60;
 
 	private boolean isDead = false;
+   private GameAnimation projectileAnimation;
 
     public Boss (JFrame w, Player p, TileMap t, BackgroundManager b) {
-      		this.window = w;
-            this.tileMap = t;
-            this.bgManager = b;
+      	this.window = w;
+         this.tileMap = t;
+         this.bgManager = b;
 			this.player = p;
 
-     		this.width = 128;
-      		this.height = 128;
+     		this.width = 192;
+      	this.height = 192;
 
-      		this.circularMotion = new CircularMotion(2000, 500, 200, 0.02);
+      	this.circularMotion = new CircularMotion(1400, 600, 200, 0.5);
+
 			this.projectiles = new LinkedList<>();
+         this.projectileAnimation = AnimationManager.loadAnimation("Fireball");
 
-            this.animation = AnimationManager.loadAnimation("BossIdle");
+         this.animation = AnimationManager.loadAnimation("BossIdleFlip");
     	  	this.soundManager = SoundManager.getInstance();
    	}
+
 
 	public void update() {
 		if(isDead) {
@@ -44,11 +48,39 @@ public class Boss {
 		circularMotion.update();
 		this.x = circularMotion.getX();
 		this.y = circularMotion.getY();
+
+      shootTimer++;
+      if (shootTimer >= SHOOT_DELAY) {
+         fireProjectile();
+         shootTimer = 0;
+      }
+      updateProjectiles();
+
 	}
 	public void takeDamage() {
       health--;
       System.out.println("Boss Health remaining: " + health);
-}
+   }
+   public void fireProjectile() {
+     int projectileY = y + height / 2 - 10;
+     projectiles.add(new Projectile(x, projectileY, -15, true, projectileAnimation));
+   }
+   private void updateProjectiles() {
+     for (int i = 0; i < projectiles.size(); i++) {
+         Projectile p = projectiles.get(i);
+         p.update();
+
+         if(p.getBoundingRectangle().intersects(player.getBoundingRectangle())) {
+             player.takeDamage();
+             p.deactivate();
+         }
+
+         if (!p.isActive()) {
+             projectiles.remove(i);
+             i--;
+         }
+     }
+   }
 	public int getHealth() { 
       return health;
     }

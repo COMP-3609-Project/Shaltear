@@ -345,7 +345,7 @@ public class Player {
             if (e.isActive() && attackHitbox.intersects(e.getBoundingRectangle())) {
                 e.die(); // Kill the enemy
                 
-                System.out.println("Enemyaa defeated!");
+                System.out.println("Enemy defeated!");
             }
         }
     }

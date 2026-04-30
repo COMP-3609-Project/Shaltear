@@ -5,8 +5,9 @@
 #   A..Z    Tiles A through Z
 #   !       Enemy
 #   *       Collectible
+#   &       Boss
 
-
-
-
+                
+                   &
+                   
 BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
