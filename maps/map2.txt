@@ -20,7 +20,7 @@ D II      *           *      C
 D      IIIIII         III    C
 D           *   IIIIII       C
 D     *  IIIIII      *   III C
-D   IIII     *   II IIII     C
+D    IIII    *   II  IIII    C
 D I         III              C
 D            *           *   C
 HBBBBBBBBBBBBBBBBBBBBBBBBBBBBG

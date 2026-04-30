@@ -122,9 +122,6 @@ public class GameWindow extends JFrame implements
 
     public void gameRender(Graphics gScr) {
         Graphics2D g2 = (Graphics2D) gScr;
-        double scaleX = (double) pWidth / getSize().width;
-        double scaleY = (double) pHeight / getSize().height;
-        g2.scale(scaleX, scaleY);
         
         if (tileMap != null) {
             tileMap.draw(g2);
@@ -133,13 +130,9 @@ public class GameWindow extends JFrame implements
 		if (gameOver) {
 			Color darken = new Color (0, 0, 0, 125);
 			g2.setColor (darken);
-			g2.fill (new Rectangle2D.Double (0, 0, this.getWidth(), this.getHeight()));
+			g2.fill (new Rectangle2D.Double (0, 0, this.getWidth()/4, this.getHeight()/4));
+            g2.drawString("GAME OVER", getWidth()/4, getHeight()/4);
 		}
-
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 24));
-        g2.drawString("LIVES: " + player.getLives(), 50, 50);
 
         drawButtons(g2);
     }
@@ -152,8 +145,8 @@ public class GameWindow extends JFrame implements
             tileManager = new TileMapManager (this);
 
             try {
-                tileMap = tileManager.loadMap("maps/map1.txt");
-                // level = 2;
+                tileMap = tileManager.loadMap("maps/map2.txt");
+                level = 2;
                 SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
@@ -241,7 +234,7 @@ public class GameWindow extends JFrame implements
     private void drawButtons (Graphics2D g2) {
         drawProfessionalButton(g2, pauseButtonArea, isPaused ? "RESUME" : "PAUSE", isOverPauseButton, new Color(52, 70, 129));
         drawProfessionalButton(g2, quitButtonArea, "QUIT", isOverQuitButton, new Color(192, 57, 43)); 
-}
+    }
 
 private void drawProfessionalButton(Graphics2D g2, Rectangle r, String text, boolean isHovered, Color baseColor) {
 
