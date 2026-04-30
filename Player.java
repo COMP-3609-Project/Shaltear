@@ -12,8 +12,6 @@ public class Player {
 
    private static final int TILE_SIZE = 64;
 
-   private static int LEVEL = 0;
-
    private JFrame window;		// reference to the JFrame on which player is drawn
    private TileMap tileMap;
    private BackgroundManager bgManager;
@@ -58,23 +56,12 @@ public class Player {
    
       animation = AnimationManager.loadAnimation("PlayerIdle");
 
-      LEVEL++;
-      if(LEVEL==1 || LEVEL == 3){
-         x = 300;
-         y = 736;
-      }
-      else if(LEVEL == 2){
-         x = 300;
-         y = 736;
-      }
+
+      x = 300;
+      y = 736;
+
 
    }
-   
-   // Get current level (before increment)
-   public static int getLevel() {
-      return LEVEL;
-   }
-
 
    public Point collidesWithTile(int newX, int newY) {
 

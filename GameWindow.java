@@ -17,7 +17,6 @@ public class GameWindow extends JFrame implements
     private Thread gameThread = null;                
     private volatile boolean isRunning = false;        
 
-    private ImageEffect imageEffect;        
     private Player player; 
 
     private boolean levelChange;
@@ -90,9 +89,7 @@ public class GameWindow extends JFrame implements
             gameOver = true;
             isRunning = false; 
         }
-        
-        imageEffect.update();
-        
+
         if (levelChange) {
             levelChange = false;
             tileManager = new TileMapManager (this);
@@ -140,8 +137,7 @@ public class GameWindow extends JFrame implements
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 24));
         g2.drawString("LIVES: " + player.getLives(), 50, 50);
-        
-        imageEffect.draw(g2);
+
         drawButtons(g2);
     }
 
@@ -164,7 +160,6 @@ public class GameWindow extends JFrame implements
 
             tileMap.spawnEnemies();
 
-            imageEffect = new ImageEffect (this);
             gameThread = new Thread(this);
             gameThread.start();
             animManager.startAnimations();
@@ -327,4 +322,6 @@ private void drawProfessionalButton(Graphics2D g2, Rectangle r, String text, boo
         createBufferStrategy(NUM_BUFFERS);
         bufferStrategy = getBufferStrategy();
     }
+
+    public int getLevel(){return level;}
 }

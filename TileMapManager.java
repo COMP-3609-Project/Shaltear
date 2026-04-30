@@ -11,10 +11,11 @@ import javax.swing.ImageIcon;
 */
 public class TileMapManager {
 
-    private ArrayList<Image> tiles;
+    private ArrayList<Image> tiles1, tiles2, tiles3;
     private int currentMap = 0;
 
     private GameWindow window;
+    private ImageEffect effect;
 
 /*
     private GraphicsConfiguration gc;
@@ -30,6 +31,7 @@ public class TileMapManager {
 
     public TileMapManager(GameWindow window) {
 	    this.window = window;
+        effect = new ImageEffect(window);
 
         loadTileImages();
         //loadCreatureSprites();
@@ -74,27 +76,25 @@ public class TileMapManager {
 
                 // check if the char represents tile A, B, C etc.
                 int tile = ch - 'A';
-                if (tile >= 0 && tile < tiles.size()) {
-                    newMap.setTile(x, y, tiles.get(tile));
+                switch (window.getLevel()) {
+                    case 1 -> {
+                        if (tile >= 0 && tile < tiles1.size()) {
+                            newMap.setTile(x, y, tiles1.get(tile));
+                        }
+                    }
+                    case 2 -> {
+                        if (tile >= 0 && tile < tiles2.size()) {
+                            newMap.setTile(x, y, tiles2.get(tile));
+                        }
+                    }
+                    case 3 -> {
+                        if (tile >= 0 && tile < tiles3.size()) {
+                            newMap.setTile(x, y, tiles3.get(tile));
+                        }
+                    }
+                    default -> {
+                    }
                 }
-/*
-                // check if the char represents a sprite
-                else if (ch == 'o') {
-                    addSprite(newMap, coinSprite, x, y);
-                }
-                else if (ch == '!') {
-                    addSprite(newMap, musicSprite, x, y);
-                }
-                else if (ch == '*') {
-                    addSprite(newMap, goalSprite, x, y);
-                }
-                else if (ch == '1') {
-                    addSprite(newMap, grubSprite, x, y);
-                }
-                else if (ch == '2') {
-                    addSprite(newMap, flySprite, x, y);
-                }
-*/
             }
         }
 
@@ -138,21 +138,21 @@ public class TileMapManager {
         // easy to drop new tiles in the images/ folder
 
         File file;
+        tiles1 = new ArrayList<>();
+        tiles2 = new ArrayList<>();
+        tiles3 = new ArrayList<>();
 
-        System.out.println("loadTileImages called.");
-
-        tiles = new ArrayList<>();
         char ch = 'A';
         while (true) {
             String filename = "images/tilemaps/tile_" + ch + ".png";
             file = new File(filename);
             if (!file.exists()) {
-                System.out.println("Image file could not be opened: " + filename);
                 break;
             }else{
-                System.out.println("Image file opened: " + filename);
                 Image tileImage = new ImageIcon(filename).getImage();
-                tiles.add(tileImage);
+                tiles1.add(tileImage);
+                tiles2.add(effect.convertImage(filename, 1));
+                tiles3.add(effect.convertImage(filename, 2));
                 ch++;
             }
         }

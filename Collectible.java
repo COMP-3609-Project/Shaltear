@@ -36,12 +36,7 @@ public class Collectible {
 		Random random = new Random();
 		//x = 300;	
 		x = 700;
-
-		if (Player.getLevel() == 2) {
-			y = 700;
-		} else {
-			y = 700;
-		}
+		y = 700;
 
 		this.player = player;
 
@@ -50,7 +45,7 @@ public class Collectible {
 		originalImage = true;
 		grayImage = false;
 
-		animation = AnimationManager.loadAnimation("Coin");
+		animation = AnimationManager.loadAnimation("Bat");
 
 	}
 
@@ -59,12 +54,7 @@ public class Collectible {
 		Rectangle2D.Double myRect = getBoundingRectangle();
 		Rectangle2D.Double playerRect = player.getBoundingRectangle();
 		
-		if (myRect.intersects(playerRect)) {
-			System.out.println ("Collision with player!");
-			return true;
-		}
-		else
-			return false;
+            return myRect.intersects(playerRect);
 	}
 
 

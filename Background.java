@@ -17,16 +17,12 @@ public class Background {
 
 	public Background(JFrame window, String imageFile, int bgDX) {
 
-    		this.bgImage = loadImage(imageFile);
-    		bgImageWidth = bgImage.getWidth(null);	// get width of the background
-
-		System.out.println ("bgImageWidth = " + bgImageWidth);
+		this.bgImage = loadImage(imageFile);
+		bgImageWidth = bgImage.getWidth(null);	// get width of the background
 
 		dimension = window.getSize();
 
 		if (bgImageWidth < dimension.width)
-      			System.out.println("Background width < panel width");
-
     		this.bgDX = bgDX;
 
 		backgroundX = 0;

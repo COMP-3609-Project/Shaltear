@@ -1,7 +1,7 @@
 import java.awt.Point;
 import javax.swing.JFrame;
 
-public class BezierCurveMotion implements Motion {
+public class BezierCurveMotion {
 
    	private static double START = 0;
    	private static double END = 1.0;
@@ -35,24 +35,19 @@ public class BezierCurveMotion implements Motion {
 		incr = INCR;
 	}
 
-    @Override
 	public boolean isActive() {
 		return active;
 	}
 
-    @Override
 	public void activate() {
 		active = true;
 	}
 	
 
-    @Override
 	public void deActivate() {
 		active = false;
 	}
 
-
-    @Override
    	public void update () {  
 
 		if (!active || !window.isVisible ()) 
