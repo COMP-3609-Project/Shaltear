@@ -1,3 +1,5 @@
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import javax.swing.JFrame;
 
@@ -15,9 +17,9 @@ public class Boss {
    private BackgroundManager bgManager;
 
 	private CircularMotion circularMotion;
-	private LinkedList<Projectile> projectiles;
+	private LinkedList<ProjectileMotion> projectiles;
 	private int shootTimer = 0;
-	private static final int SHOOT_DELAY = 60;
+	private static final int SHOOT_DELAY = 20;
 
 	private boolean isDead = false;
    private GameAnimation projectileAnimation;
@@ -31,7 +33,7 @@ public class Boss {
      		this.width = 192;
       	this.height = 192;
 
-      	this.circularMotion = new CircularMotion(1400, 600, 200, 0.5);
+      	this.circularMotion = new CircularMotion(1000, 400, 200, 3);
 
 			this.projectiles = new LinkedList<>();
          this.projectileAnimation = AnimationManager.loadAnimation("Fireball");
@@ -59,20 +61,31 @@ public class Boss {
 	}
 	public void takeDamage() {
       health--;
-      System.out.println("Boss Health remaining: " + health);
    }
+   
+   public Rectangle2D.Double getBoundingRectangle() {
+      return new Rectangle2D.Double(x, y, width, height);
+   }
+
+   public void drawProjectiles(Graphics2D g2, int tileOffsetX) {
+       for (ProjectileMotion p : projectiles) {
+         p.draw(g2, tileOffsetX);
+      }
+   }
+   
    public void fireProjectile() {
-     int projectileY = y + height / 2 - 10;
-     projectiles.add(new Projectile(x, projectileY, -15, true, projectileAnimation));
+     ProjectileMotion proj = new ProjectileMotion(window, this, -15);
+     proj.activate();
+     projectiles.add(proj);
    }
    private void updateProjectiles() {
      for (int i = 0; i < projectiles.size(); i++) {
-         Projectile p = projectiles.get(i);
+         ProjectileMotion p = projectiles.get(i);
          p.update();
 
-         if(p.getBoundingRectangle().intersects(player.getBoundingRectangle())) {
+         if(p.getBoundingRect().intersects(player.getBoundingRectangle())) {
              player.takeDamage();
-             p.deactivate();
+             p.deActivate();
          }
 
          if (!p.isActive()) {
@@ -99,7 +112,7 @@ public class Boss {
    public GameAnimation getAnimation() {
       return animation;
    }
-   public LinkedList<Projectile> getProjectiles() {
+   public LinkedList<ProjectileMotion> getProjectiles() {
 	  return projectiles;
    }
    public boolean isDead() {
@@ -108,4 +121,6 @@ public class Boss {
    public void die() {
 	  isDead = true;
    }
+   public Player getPlayer(){return this.player;}
+   public void setPlayer(Player p){this.player = p;}
 }

@@ -103,6 +103,7 @@ public class GameWindow extends JFrame implements
                 player = new Player(this, tileMap, new BackgroundManager(this, 8));
                 tileMap.setPlayer(player);
             } catch (IOException e) {
+                SoundManager.getInstance().stopSound("background3");
                 gameOver = true;
             }
         }
@@ -138,7 +139,7 @@ public class GameWindow extends JFrame implements
     }
 
     private void startGame() {
-        level = 3;
+        level = 1;
         levelChange = false;
 
         if (gameThread == null) {
@@ -146,8 +147,8 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map3.txt");
-                // level = 2;
-                SoundManager.getInstance().playSound("background3", true);
+                level = 3;
+                SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
             } catch (IOException e) {
@@ -191,6 +192,12 @@ public class GameWindow extends JFrame implements
         if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_W) {
             player.setKey(3, true);
         }
+        if(keyCode == KeyEvent.VK_F){
+            player.attack();
+        }
+        if(keyCode == KeyEvent.VK_M){
+            player.projecTileActivate();
+        }
     }
 
     @Override
@@ -211,6 +218,9 @@ public class GameWindow extends JFrame implements
         }
         if (keyCode == KeyEvent.VK_F) { 
             player.attack();
+        }
+        if(keyCode == KeyEvent.VK_M){
+            player.projecTileActivate();
         }
     }
 

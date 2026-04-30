@@ -98,7 +98,11 @@ public class TileMap {
         for(Enemy enemy : sprites) {
             enemy.setPlayer(player);
         }
+        for(Boss boss : bosslist) {
+            boss.setPlayer(player);
+        }
         if(window.getLevel()==2){ c = collectibles.get(new Random().nextInt((14-0) + 1) + 0);}
+        
     }
 
     public void draw(Graphics2D g2) {
@@ -158,18 +162,16 @@ public class TileMap {
         for(Boss b : bosslist) {
             if (b.isDead() == false) { 
                 GameAnimation anim = b.getAnimation();
-                
                 if (anim != null) {
                     anim.draw(g2, Math.round(b.getX()) + tileOffsetX, Math.round(b.getY()), 192, 192);
+                    b.drawProjectiles(g2, tileOffsetX);
                 }
-                for (Projectile p : b.getProjectiles()) {
-                p.draw(g2, tileOffsetX);
-                 }
             }
         }
 
        g2.setColor(Color.WHITE);
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
+       player.drawProjectiles(g2, tileOffsetX);
        
        if(window.getLevel()==1){
             g2.setColor(Color.RED);
@@ -186,6 +188,13 @@ public class TileMap {
             if (collectible != null) {
                 collectible.getAnimation().draw(g2, Math.round(collectible.getX()) + tileOffsetX, Math.round(collectible.getY()), 48, 48);
             }
+       }else{
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Arial", Font.BOLD, 20));
+            g2.drawString("Boss Health: " + bosslist.get(0).getHealth(), 20, 20);
+            g2.setColor(Color.BLUE);
+            g2.setFont(new Font("Arial", Font.BOLD, 30));
+            g2.drawString("LIVES: " + player.getLives(), 50, 50);
        }
        
     }

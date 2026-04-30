@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.JFrame;
 
@@ -24,7 +25,7 @@ public class Player {
 
    private GameAnimation animation;
 
-   private int lives = 3;
+   private static int lives = 3;
 
    private boolean jumping;
    private int timeElapsed;
@@ -33,7 +34,7 @@ public class Player {
    private boolean goingUp;
    private boolean goingDown;
 
-   private boolean leftKey, rightKey, jumpKey;
+   private boolean leftKey, rightKey, jumpKey, shootKey;
 
    private boolean inAir;
    private int initialVelocity;
@@ -43,6 +44,8 @@ public class Player {
    private int attackTimer = 0;
    private int invincibleTimer = 0;
    private static final int INVINCIBILITY_DURATION = 180;
+
+   private ArrayList<ProjectileMotion> playerProjectiles;  // Multiple player projectiles
 
 
    public Player (JFrame window, TileMap t, BackgroundManager b) {
@@ -55,7 +58,7 @@ public class Player {
       inAir = false;
    
       animation = AnimationManager.loadAnimation("PlayerIdle");
-
+      playerProjectiles = new ArrayList<>();
 
       x = 300;
       y = 736;
@@ -247,12 +250,55 @@ public class Player {
       initialVelocity = 70;
    }
 
+   public void projecTileActivate(){
+      // Create a new projectile and add it to the list
+      ProjectileMotion proj = new ProjectileMotion(window, this, tileMap);
+      proj.activate();
+      playerProjectiles.add(proj);
+   }
+
+   public void updateProjectiles() {
+      for (int i = 0; i < playerProjectiles.size(); i++) {
+         ProjectileMotion p = playerProjectiles.get(i);
+         p.update();
+         
+         if (!p.isActive()) {
+            playerProjectiles.remove(i);
+            i--;
+         }
+      }
+   }
+
+   public void drawProjectiles(Graphics2D g2, int tileOffsetX) {
+       for (ProjectileMotion p : playerProjectiles) {
+         p.draw(g2, tileOffsetX);
+      }
+   }
+
+   public ArrayList<ProjectileMotion> getPlayerProjectiles() {
+      return playerProjectiles;
+   }
+   
+   public int getHeight() {
+      return animation.getHeight();
+   }
+   
+   public int getDirection() {
+      if (animation.getName().contains("Flip")) {
+         return 1;
+      } else {
+         return 2;
+      }
+   }
 
    public void update() {
       int distance = 0;
       int newY = 0;
 
       timeElapsed++;
+
+      // Update all player projectiles
+      updateProjectiles();
 
       if (invincibleTimer > 0) {
         invincibleTimer--;
@@ -364,6 +410,7 @@ public class Player {
     if (direction == 1) leftKey = isPressed;
     if (direction == 2) rightKey = isPressed;
     if (direction == 3) jumpKey = isPressed;
+    if (direction == 4) shootKey = isPressed;
 	}
 
    public void moveUp () {
