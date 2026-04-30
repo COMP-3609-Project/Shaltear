@@ -166,6 +166,7 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
+                level = 3;
                 SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
@@ -174,7 +175,7 @@ public class GameWindow extends JFrame implements
                 System.exit(0);
             }
 
-            // tileMap.spawnEnemies();
+            tileMap.spawnEnemies();
 
             gameThread = new Thread(this);
             gameThread.start();
@@ -266,6 +267,7 @@ public class GameWindow extends JFrame implements
     }
 
     private void testMousePress(int x, int y) {
+        // System.out.println(x + ", " + y);
         if (isStopped && !isOverQuitButton) return;
         if (isOverStopButton) { isStopped = true; isPaused = false; }
         else if (isOverPauseButton) { isPaused = !isPaused; }

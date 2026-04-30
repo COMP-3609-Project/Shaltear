@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class TileMap {
@@ -13,6 +14,8 @@ public class TileMap {
     private int mapWidth, mapHeight;
     private int offsetY;
 
+    int cCount = 0;
+
     private LinkedList sprites;
     private Player player;
     private Collectible c;
@@ -22,6 +25,8 @@ public class TileMap {
     private Dimension dimension;
 
     private int aliveCount;
+
+    private ArrayList<Collectible> collectibles;
 
     public TileMap(GameWindow window, int width, int height) {
         this.window = window;
@@ -41,13 +46,29 @@ public class TileMap {
         
         tiles = new Image[mapWidth][mapHeight];
         sprites = new LinkedList();
- 
+        collectibles = new ArrayList<>();
+        
+    }
+
+    public void makeCollectibles(){
+        collectibles.add(new Collectible(window, player, 1054, 116));
+        collectibles.add(new Collectible(window, player, 158, 66));
+        collectibles.add(new Collectible(window, player, 918, 66));
+        collectibles.add(new Collectible(window, player, 1444, 386));
+        collectibles.add(new Collectible(window, player, 1442, 768));
+        collectibles.add(new Collectible(window, player, 151, 639));
+        collectibles.add(new Collectible(window, player, 151, 324));
+        collectibles.add(new Collectible(window, player, 1230, 445));
+        collectibles.add(new Collectible(window, player, 1430, 254));
+        collectibles.add(new Collectible(window, player, 692, 247));
+        collectibles.add(new Collectible(window, player, 757, 90));
+        c = collectibles.get(cCount);
     }
 
  
     public void setPlayer(Player player) {
         this.player = player;
-        c = new Collectible(window, player);
+        makeCollectibles();
     }
 
     public void draw(Graphics2D g2) {
@@ -115,8 +136,10 @@ public class TileMap {
        g2.setColor(Color.WHITE);
        g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
-       c.getAnimation().draw(g2, Math.round(c.getX()) + tileOffsetX, Math.round(c.getY()), TILE_SIZE/2, TILE_SIZE/2);
-
+       if(window.getLevel()==2){
+            c.getAnimation().draw(g2, Math.round(c.getX()) + tileOffsetX, Math.round(c.getY()), TILE_SIZE/2, TILE_SIZE/2);
+       }
+       
     }
 
     public void addEnemy(int x, int y, int patrolWidth) {
@@ -187,7 +210,15 @@ public class TileMap {
     }
 
     if (aliveCount == 0) {
-        if (c.collidesWithPlayer()) {
+        window.endLevel();
+    }
+
+    if(c.collidesWithPlayer()){
+        SoundManager.getInstance().playSound("bat", false);
+        cCount++;
+        if(cCount < collectibles.size()){
+            c = collectibles.get(cCount);
+        } else {
             window.endLevel();
         }
     }

@@ -20,10 +20,16 @@ public class SoundManager {				// a Singleton class
 		clips.put("background1", clip);
 
 		clip = loadClip("sounds/BackgroundSound2.wav");
-		clips.put("background2", clip);	
+		clips.put("background2", clip);
 
 		clip = loadClip("sounds/BackgroundSound3.wav");
-		clips.put("background3", clip);	
+		clips.put("background3", clip);
+
+		clip = loadClip("sounds/BatSound.wav");
+		clips.put("bat", clip);
+
+		clip = loadClip("sounds/HurtSound.wav");
+		clips.put("hurt", clip);
 	}
 
 

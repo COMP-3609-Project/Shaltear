@@ -1,6 +1,5 @@
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
 import javax.swing.JFrame;
 
 
@@ -27,18 +26,16 @@ public class Collectible {
 	boolean originalImage, grayImage;
 
 
-	public Collectible (JFrame panel, Player player) {
+	public Collectible (JFrame panel, Player player, int x, int y) {
 		this.panel = panel;
 		//Graphics g = window.getGraphics ();
 		//g2 = (Graphics2D) g;
 
 		dimension = panel.getSize();
-		Random random = new Random();
-		//x = 300;	
-		x = 700;
-		y = 700;
 
 		this.player = player;
+		this.x = x;
+		this.y = y;
 
 		time = 0;				// range is 0 to 10
 		timeChange = 1;				// set to 1

@@ -8,16 +8,17 @@
 #   *       Goal
 #   1       Bad Guy 1 (grub)
 #   2       Bad Guy 2 (fly)
-D            I          
-D           I           
-D          I            
-D         I             
-D        I              
-D                      
-D                      
-D              IIIIII   
-D       IIIIII          
-D   IIII                
-DI                      
+
+D                      C
+D I    I      I       IC
+D                 IIII C
+D    II        II      C
+D       IIIIII         C
+D II                   C
+D      IIIIII       IIIC
+D              IIIIII  C
+D       IIIIII         C
+D   IIII        II IIIIC
+D I         III        C
 D                      C
 HBBBBBBBBBBBBBBBBBBBBBBG

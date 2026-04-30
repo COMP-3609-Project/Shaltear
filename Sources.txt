@@ -4,4 +4,6 @@ Background3 - https://ansimuz.itch.io/sunnyland-fort-of-illusion
 BackgroundSound1 - https://pixabay.com/sound-effects/musical-be-more-serious-loop-275528/
 BackgroundSound2 - https://pixabay.com/sound-effects/musical-looping-techno-beat-29923/
 BackgroundSound3 - https://pixabay.com/sound-effects/musical-grudge-revised-409696/
+BatSound - https://pixabay.com/sound-effects/film-special-effects-cute-little-baby-bat-189968/
+HurtSound - https://pixabay.com/sound-effects/film-special-effects-hurt-sound-435314/
 TileMap - https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art

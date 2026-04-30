@@ -58,7 +58,7 @@ public class ImageEffect {
 
 		// Increase the value of the red component based on the value of tint
 		if(color == 1)
-			red = truncate( red + tint);
+			red = blue = green = truncate((red + blue + green)/3);
 		else if(color == 2){
 			blue = truncate( blue + tint);
 			green = truncate( green + tint);

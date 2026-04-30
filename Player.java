@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 public class Player {			
 
    private static final int DX = 15;	// amount of X pixels to move in one keystroke
-   private static final int DY = 32;	// amount of Y pixels to move in one keystroke
+   private static final int DY = 20;	// amount of Y pixels to move in one keystroke
 
    private static final int TILE_SIZE = 64;
 
@@ -355,6 +355,7 @@ public class Player {
       if (invincibleTimer > 0) {
          return;
       }
+      SoundManager.getInstance().playSound("hurt", false);
       lives--;
       invincibleTimer = INVINCIBILITY_DURATION;
       System.out.println("Lives remaining: " + lives);
