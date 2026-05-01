@@ -39,6 +39,8 @@ public class GameWindow extends JFrame implements
     TileMap    tileMap;
 	private AnimationManager animManager;
 
+    private int timer = 10 * 30;
+
     public GameWindow() {
         super("Shaltear");
 
@@ -91,7 +93,7 @@ public class GameWindow extends JFrame implements
             //isRunning = false; 
         }
 
-        if (levelChange) {
+        if (levelChange && !gameOver) {
             levelChange = false;
             tileManager = new TileMapManager (this);
 
@@ -128,31 +130,50 @@ public class GameWindow extends JFrame implements
         if (tileMap != null) {
             tileMap.draw(g2);
         }
+
+        g2.setColor(Color.YELLOW);
+        g2.setFont(new Font("Arial", Font.BOLD, 10));
+        g2.drawString("CONTROLS:", 50, 100);
+        g2.drawString("Move: A/D or Left/Right Arrows", 50, 120);
+        g2.drawString("Jump: W or Space", 50, 140);
+        g2.drawString("Attack: F", 50, 160);
+        g2.drawString("Shoot Projectile: M", 50, 180);
+        if(level==2){
+            g2.setColor(Color.BLACK);
+            g2.setFont(new Font("Arial", Font.BOLD, 30));
+            g2.drawString("Timer: " + Math.round(timer / 30.0) + "secs", 500, 50);
+            if(timer <= 0) {
+                gameOver = true;
+                endLevel();
+            }
+            if(!isPaused){
+                timer--;
+            }
+        }
         
 		if (gameOver) {
-		
-        Color darken = new Color(0, 0, 0, 180); 
-        g2.setColor(darken);
-    
-        g2.fillRect(0, 0, pWidth, pHeight); 
+            Color darken = new Color(0, 0, 0, 180); 
+            g2.setColor(darken);
+        
+            g2.fillRect(0, 0, pWidth, pHeight); 
 
-    
-        g2.setFont(new Font("SansSerif", Font.BOLD, 72));
-        g2.setColor(Color.WHITE);
-    
-    
-        String msg = (player != null && player.getLives() <= 0) ? "GAME OVER" : "VICTORY!";
-        FontMetrics metrics = g2.getFontMetrics();
-        int x = (pWidth - metrics.stringWidth(msg)) / 2;
-        int y = (pHeight / 2) + (metrics.getAscent() / 2);
-    
-        g2.drawString(msg, x, y);
+        
+            g2.setFont(new Font("SansSerif", Font.BOLD, 72));
+            g2.setColor(Color.WHITE);
+        
+        
+            String msg = (player != null && player.getLives() <= 0 || timer <= 0) ? "GAME OVER" : "VICTORY!";
+            FontMetrics metrics = g2.getFontMetrics();
+            int x = (pWidth - metrics.stringWidth(msg)) / 2;
+            int y = (pHeight / 2) + (metrics.getAscent() / 2);
+        
+            g2.drawString(msg, x, y);
 
-    
-        g2.setFont(new Font("Monospaced", Font.PLAIN, 24));
-        String subMsg = "Press ESC to Quit";
-        int subX = (pWidth - g2.getFontMetrics().stringWidth(subMsg)) / 2;
-        g2.drawString(subMsg, subX, y + 60);
+        
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 24));
+            String subMsg = "Press ESC to Quit";
+            int subX = (pWidth - g2.getFontMetrics().stringWidth(subMsg)) / 2;
+            g2.drawString(subMsg, subX, y + 60);
 		}
 
         drawButtons(g2);
@@ -167,7 +188,6 @@ public class GameWindow extends JFrame implements
 
             try {
                 tileMap = tileManager.loadMap("maps/map1.txt");
-                level = 1;
                 SoundManager.getInstance().playSound("background1", true);
                 player = new Player(this, tileMap, tileMap.bgManager);
                 tileMap.setPlayer(player);
@@ -187,8 +207,11 @@ public class GameWindow extends JFrame implements
             gameOver = true;
             return;
         }
-		level = level + 1;
-		levelChange = true;
+        if(!gameOver){
+            level = level + 1;
+            levelChange = true;
+        }
+
 	}
 
     @Override

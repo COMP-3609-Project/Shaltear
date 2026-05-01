@@ -74,6 +74,8 @@ public class Boss {
 	public void takeDamage() {
        if (isDying || isDead) return; 
           health--;
+       
+       SoundManager.getInstance().playSound("hurt", false);
 
        if (health <= 0) {
         startDeathSequence();

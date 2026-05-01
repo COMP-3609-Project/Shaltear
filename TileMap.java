@@ -173,29 +173,33 @@ public class TileMap {
        player.getAnimation().draw(g2, Math.round(player.getX()) + tileOffsetX, Math.round(player.getY()), TILE_SIZE, TILE_SIZE);
        player.drawProjectiles(g2, tileOffsetX);
        
-       if(window.getLevel()==1){
-            g2.setColor(Color.RED);
-            g2.setFont(new Font("Arial", Font.BOLD, 20));
-            g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
-            g2.setColor(Color.BLUE);
-            g2.setFont(new Font("Arial", Font.BOLD, 30));
-            g2.drawString("LIVES: " + player.getLives(), 50, 50);
-       }else if(window.getLevel()==2){
-            g2.setColor(Color.RED);
-            g2.setFont(new Font("Arial", Font.BOLD, 30));
-            g2.drawString("Bats Collected: " + collected + "/15", 50, 50);
-            Collectible collectible = getCurrentCollectible();
-            if (collectible != null) {
-                collectible.getAnimation().draw(g2, Math.round(collectible.getX()) + tileOffsetX, Math.round(collectible.getY()), 48, 48);
+        switch (window.getLevel()) {
+            case 1 -> {
+                g2.setColor(Color.RED);
+                g2.setFont(new Font("Arial", Font.BOLD, 20));
+                g2.drawString("Skeletons Remaining: " + aliveCount, 20, 20);
+                g2.setColor(Color.BLUE);
+                g2.setFont(new Font("Arial", Font.BOLD, 30));
+                g2.drawString("LIVES: " + player.getLives(), 50, 50);
             }
-       }else{
-            g2.setColor(Color.RED);
-            g2.setFont(new Font("Arial", Font.BOLD, 20));
-            g2.drawString("Boss Health: " + bosslist.get(0).getHealth(), 20, 20);
-            g2.setColor(Color.BLUE);
-            g2.setFont(new Font("Arial", Font.BOLD, 30));
-            g2.drawString("LIVES: " + player.getLives(), 50, 50);
-       }
+            case 2 -> {
+                g2.setColor(Color.BLUE);
+                g2.setFont(new Font("Arial", Font.BOLD, 30));
+                g2.drawString("Bats Collected: " + collected + "/15", 50, 50);
+                Collectible collectible = getCurrentCollectible();
+                if (collectible != null) {
+                    collectible.getAnimation().draw(g2, Math.round(collectible.getX()) + tileOffsetX, Math.round(collectible.getY()), 48, 48);
+                }
+            }
+            case 3 -> {
+                g2.setColor(Color.RED);
+                g2.setFont(new Font("Arial", Font.BOLD, 20));
+                g2.drawString("Boss Health: " + bosslist.get(0).getHealth(), 20, 20);
+                g2.setColor(Color.BLUE);
+                g2.setFont(new Font("Arial", Font.BOLD, 30));
+                g2.drawString("LIVES: " + player.getLives(), 50, 50);
+            }
+        }
        
     }
 

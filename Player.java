@@ -381,7 +381,7 @@ public class Player {
          animation = AnimationManager.loadAnimation("PlayerAttack");
       }
 
-      int range = 40; 
+      int range = 35; 
       Rectangle2D.Double attackHitbox;
 
       if (animation.getName().contains("Flip")) {
@@ -400,7 +400,7 @@ public class Player {
             
             if (e.isActive() && attackHitbox.intersects(e.getBoundingRectangle())) {
                 e.die(); // Kill the enemy
-                
+                SoundManager.getInstance().playSound("hurt", false);
                 System.out.println("Enemy defeated!");
             }
         }

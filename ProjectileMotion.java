@@ -129,13 +129,8 @@ public class ProjectileMotion {
         if (!active || animation == null) return;
 
         Rectangle2D rect = getBoundingRectangle();
-        
-        
-        animation.draw(g2, (int)rect.getX() + tileOffsetX, (int)rect.getY(), XSIZE, YSIZE);
 
-        //Debug Hitbox
-        g2.setColor(java.awt.Color.RED);
-        g2.drawRect((int)rect.getX() + tileOffsetX, (int)rect.getY(), XSIZE, YSIZE);
+        animation.draw(g2, (int)rect.getX() + tileOffsetX, (int)rect.getY(), XSIZE, YSIZE);
     }
 
     public boolean isActive() { return active; }
