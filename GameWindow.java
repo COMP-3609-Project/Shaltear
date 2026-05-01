@@ -39,7 +39,7 @@ public class GameWindow extends JFrame implements
     TileMap    tileMap;
 	private AnimationManager animManager;
 
-    private int timer = 10 * 30;
+    private int timer = 60 * 30;
 
     public GameWindow() {
         super("Shaltear");
